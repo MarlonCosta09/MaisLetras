@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>+Letras - Prática de Língua Portuguesa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #d1fae5, #e0f2fe);
+        }
+        .title-font {
+            font-family: 'Roboto Slab', serif;
+        }
+        .text-background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            color: rgba(100, 100, 100, 0.08);
+            font-size: 1.8rem;
+            line-height: 1.8;
+            text-align: center;
+            overflow: hidden;
+            word-break: break-all;
+            white-space: pre-wrap;
+            user-select: none;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 100px,
+                rgba(220, 220, 220, 0.03) 100px,
+                rgba(220, 220, 220, 0.03) 200px
+            );
+        }
+        .topic-item {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            border-left: 8px solid #0ea5e9;
+        }
+        .topic-item:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+        .topic-item .number {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #94a3b8;
+            margin-right: 1rem;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+        .modal-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .modal-container.is-active {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .subtopic-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .subtopic-list.is-expanded {
+            max-height: 500px; /* Adjust as needed */
+        }
+        .subtopic-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+        }
+        .subtopic-item:hover {
+            background-color: #e2e8f0;
+        }
+        .subtopic-item input[type="checkbox"] {
+            margin-right: 0.75rem;
+        }
+        .study-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #2563eb;
+            background-color: #eff6ff;
+            border: 1px solid #93c5fd;
+            transition: all 0.2s ease-in-out;
+        }
+        .study-button:hover {
+            background-color: #bfdbfe;
+            border-color: #3b82f6;
+        }
+        /* New styles for study content */
+        .study-content-container {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .study-content-container h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .study-content-container ul {
+            list-style-type: disc;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        .study-content-container li {
+            margin-bottom: 0.5rem;
+        }
+        .study-content-container p {
+            margin-bottom: 1rem;
+        }
+        .highlight {
+            font-weight: 600;
+            color: #dc2626; /* red-600 */
+        }
+        .example-highlight {
+            background-color: #dcfce7; /* light green-100 */
+            border-left: 4px solid #16a34a; /* green-600 */
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            color: #1a2e05; /* dark green */
+        }
+        .progress-bar-container {
+            width: 80%;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            overflow: hidden;
+            height: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* New styles for Quiz */
+        #quiz-screen {
+            background: linear-gradient(to bottom right, #d1fae5, #e0f2fe);
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .quiz-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .option-btn {
+            background-color: #eff6ff;
+            color: #1e40af;
+            font-weight: 500;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 2px solid #bfdbfe;
+            transition: all 0.2s ease-in-out;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .option-btn:hover {
+            background-color: #dbeafe;
+        }
+        .option-btn.correct {
+            background-color: #34d399; /* green-400 */
+            color: white;
+            border-color: #059669; /* green-600 */
+        }
+        .option-btn.incorrect {
+            background-color: #f87171; /* red-400 */
+            color: white;
+            border-color: #dc2626; /* red-600 */
+        }
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* New styles for final screen */
+        #final-screen {
+            background: linear-gradient(to bottom right, #e0f2fe, #bbdefb);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .final-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #059669;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .final-stats {
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            color: #475569;
+        }
+        .final-stats .correct-answers {
+            color: #059669;
+        }
+        .final-stats .incorrect-answers {
+            color: #dc2626;
+        }
+        .final-buttons button {
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="app-container" class="w-full max-w-3xl mx-auto">
+        
+        <!-- Tela Inicial (Home Screen) -->
+        <div id="home-screen" class="text-center">
+            <!-- Fundo de texto transparente -->
+            <div class="text-background-overlay">
+                Gramática Morfologia Sintaxe Fonética Fonologia Acentuação Ortografia Hífen Fonemas Encontros Vocálicos Substantivo Adjetivo Verbo Artigo Pronome Advérbio Preposição Conjunção Numeral Interjeição Morfema Termos Essenciais Sujeito Predicado Termos Integrantes Objeto Direto Objeto Indireto Complemento Nominal Agente da Passiva Termos Acessórios Adjunto Adnominal Adjunto Adverbial Aposto Vocativo Concordância Verbal Concordância Nominal Regência Verbal Concordância Nominal Transitividade Verbal Vozes do Verbo Voz Ativa Voz Passiva Voz Reflexiva Uso da Vírgula Crase Orações Reduzidas Colocação Pronominal Funções do Que e Se Pontuação Português Língua Portuguesa Estudo Prática Aprender Conhecimento
+            </div>
+
+            <header class="mb-10 relative z-10">
+                <h1 class="text-5xl md:text-6xl font-bold text-emerald-600 title-font">+Letras</h1>
+                <p class="text-slate-500 mt-2 text-lg">Sua aprovação no ProfLetras!</p>
+            </header>
+            <main class="flex justify-center items-center h-64 relative z-10">
+                <svg class="w-48 h-48 text-emerald-600 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 18 4 A 10 10 0 1 0 18 20" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                </svg>
+            </main>
+            
+            <div class="flex justify-center mt-8 relative z-10">
+                <button id="start-studies-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg">
+                    Iniciar Estudos
+                </button>
+            </div>
+            
+            <footer class="mt-8 relative z-10 text-xs text-slate-500">
+                <p>Desenvolvido por: Prof.º Marlon Costa - Língua Portuguesa e Literatura</p>
+            </footer>
+        </div>
+
+        <!-- Tela de Seleção de Tópico Principal (nova) -->
+        <div id="main-topics-screen" class="hidden">
+            <header class="text-center mb-10">
+                <h1 class="text-5xl md:text-6xl font-bold text-slate-700 title-font">+Letras</h1>
+                <p class="text-slate-500 mt-2 text-lg">Selecione um tópico principal.</p>
+            </header>
+            <main id="main-topic-container" class="space-y-4">
+                <!-- Tópicos serão inseridos dinamicamente aqui -->
+            </main>
+            <footer class="mt-8 text-center flex justify-center items-center gap-4 flex-col sm:flex-row">
+                <button id="config-simulado-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg opacity-50 cursor-not-allowed" disabled>
+                    Configurar Simulado
+                </button>
+                <button id="back-to-home-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg transition-colors">
+                    Voltar
+                </button>
+            </footer>
+        </div>
+
+        <!-- Tela do Simulado (nova) -->
+        <div id="quiz-screen" class="hidden">
+            <header class="mb-8 p-4 quiz-header max-w-2xl mx-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 id="quiz-topic-title" class="text-xl font-bold text-sky-700">Simulado ProfLetras</h2>
+                        <p id="question-counter" class="text-slate-500"></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-500">Pontuação</p>
+                        <p id="score" class="text-2xl font-bold text-slate-700">0</p>
+                    </div>
+                </div>
+                <div class="w-full bg-blue-200 rounded-full h-2.5">
+                    <div id="progress-bar-quiz" class="bg-sky-500 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%;"></div>
+                </div>
+            </header>
+
+            <main id="quiz-container" class="bg-gradient-to-br from-blue-100 to-blue-200 p-6 md:p-8 rounded-xl shadow-md max-w-2xl mx-auto">
+                <div id="quiz-loading-area" class="flex flex-col justify-center items-center h-40 hidden">
+                    <div class="spinner mb-2"></div>
+                    <p id="quiz-loading-text" class="text-slate-600 font-semibold">A gerar questões...</p>
+                </div>
+                <div id="quiz-content" class="hidden">
+                    <p id="question-text" class="text-lg md:text-xl mb-6 min-h-[60px]"></p>
+                    <div id="options-container" class="flex flex-col space-y-3">
+                        <!-- Opções serão inseridas aqui -->
+                    </div>
+                </div>
+            </main>
+
+            <footer class="mt-6 flex justify-center items-center gap-4 max-w-2xl mx-auto">
+                <button id="back-to-menu-quiz" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors">
+                    Voltar
+                </button>
+                <button id="next-question-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg hidden">
+                    Próxima Pergunta &rarr;
+                </button>
+            </footer>
+        </div>
+
+        <!-- Tela Final do Simulado (nova) -->
+        <div id="final-screen" class="hidden text-center bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold text-slate-700 mb-2">Simulado Finalizado!</h2>
+            <p class="text-lg text-slate-600 mb-1">Sua pontuação final foi:</p>
+            <p id="final-score-display" class="final-score"></p>
+            <div class="final-stats text-center mb-8">
+                <p>Acertos: <span id="correct-answers-display" class="correct-answers font-bold"></span></p>
+                <p>Erros: <span id="incorrect-answers-display" class="incorrect-answers font-bold"></span></p>
+            </div>
+            <div class="final-buttons flex flex-wrap justify-center gap-4">
+                <button id="restart-quiz-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    Tentar Novamente
+                </button>
+                <button id="back-to-menu-final-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg transition-colors">
+                    Escolher outro Tópico
+                </button>
+                <button id="back-to-home-final-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg transition-colors">
+                    Voltar à Tela Inicial
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Estudos (existente) -->
+        <div id="study-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="study-modal-title">
+            <div id="study-modal-container" class="modal-container w-full max-w-2xl aspect-square">
+                <div id="study-loading-area" class="flex flex-col justify-center items-center h-full">
+                    <div class="spinner mb-2"></div>
+                    <p id="loading-message" class="text-slate-600 font-semibold text-center">A carregar material de Estudo...</p>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+                <div id="study-content" class="hidden prose max-w-none study-content-container">
+                    <!-- Conteúdo de estudo será inserido aqui -->
+                </div>
+                <button id="close-study-modal" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 transition-colors" aria-label="Fechar janela de estudo">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Novo Modal para Quantidade de Questões -->
+        <div id="question-quantity-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="question-quantity-title">
+            <div class="modal-container w-full max-w-xs p-6">
+                <h3 id="question-quantity-title" class="text-2xl font-bold text-blue-700 mb-4">Número de Questões</h3>
+                <label for="modal-question-quantity-input" class="block text-slate-700 font-semibold mb-2">Quantidade:</label>
+                <input type="number" id="modal-question-quantity-input" value="5" min="1" max="50" class="w-full p-2 border border-slate-300 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+                <div class="flex justify-end gap-3 mt-6">
+                    <button id="confirm-num-questions-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg transition-colors shadow-lg">
+                        Confirmar
+                    </button>
+                    <button id="cancel-num-questions-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-5 rounded-lg transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Initialization
+        let app, auth, db, userId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        async function initFirebase() {
+            try {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        const userDocRef = doc(db, "artifacts", appId, "users", userId, "userData", "profile");
+                        setDoc(userDocRef, { friendsHelpCount: 3 }, { merge: true });
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+            }
+        }
+        
+        // DOM Elements
+        const homeScreen = document.getElementById('home-screen');
+        const mainTopicsScreen = document.getElementById('main-topics-screen');
+        const startStudiesBtn = document.getElementById('start-studies-btn');
+        const mainTopicContainer = document.getElementById('main-topic-container');
+        const backToHomeBtn = document.getElementById('back-to-home-btn');
+        const configSimuladoBtn = document.getElementById('config-simulado-btn');
+        const questionQuantityModal = document.getElementById('question-quantity-modal');
+        const modalQuestionQuantityInput = document.getElementById('modal-question-quantity-input');
+        const confirmNumQuestionsBtn = document.getElementById('confirm-num-questions-btn');
+        const cancelNumQuestionsBtn = document.getElementById('cancel-num-questions-btn');
+        const studyModal = document.getElementById('study-modal');
+        const studyModalContainer = document.getElementById('study-modal-container');
+        const studyLoadingArea = document.getElementById('study-loading-area');
+        const loadingMessage = document.getElementById('loading-message');
+        const progressBar = document.getElementById('progress-bar');
+        const studyContent = document.getElementById('study-content');
+        const closeStudyModalBtn = document.getElementById('close-study-modal');
+        const finalScreen = document.getElementById('final-screen');
+
+        // Quiz DOM elements
+        const quizScreen = document.getElementById('quiz-screen');
+        const quizLoadingArea = document.getElementById('quiz-loading-area');
+        const quizLoadingText = document.getElementById('quiz-loading-text');
+        const quizContent = document.getElementById('quiz-content');
+        const quizTopicTitle = document.getElementById('quiz-topic-title');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score');
+        const progressBarQuiz = document.getElementById('progress-bar-quiz');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const backToMenuQuizBtn = document.getElementById('back-to-menu-quiz');
+        const finalScoreDisplay = document.getElementById('final-score-display');
+        const correctAnswersDisplay = document.getElementById('correct-answers-display');
+        const incorrectAnswersDisplay = document.getElementById('incorrect-answers-display');
+        const restartQuizBtn = document.getElementById('restart-quiz-btn');
+        const backToMenuFinalBtn = document.getElementById('back-to-menu-final-btn');
+        const backToHomeFinalBtn = document.getElementById('back-to-home-final-btn');
+        
+        // Data Structure for Topics and Subtopics
+        const topics = [
+            { id: 't1', title: 'O texto como unidade de trabalho', subtopics: ['Concepções de texto: estrutural, funcional, sociointeracionista.', 'Texto como centro das práticas de linguagem (BNCC).', 'Critérios de textualidade (coerência, coesão, situacionalidade etc.).', 'Texto como prática social (interação, circulação, finalidade).', 'Texto no ensino: objeto de ensino e instrumento de aprendizagem.'] },
+            { id: 't2', title: 'As práticas de linguagem', subtopics: ['Modalidades: oralidade, leitura, escrita, análise linguística.', 'Perspectiva sociointeracionista (Vygotsky, Bakhtin, PCN/BNCC).', 'Funções da linguagem em contextos sociais.', 'Práticas de linguagem no cotidiano e na escola.', 'Multiletramentos e práticas de linguagem digitais.'] },
+            { id: 't3', title: 'A construção da textualidade', subtopics: ['Coesão e coerência: mecanismos e estratégias.', 'Intencionalidade e aceitabilidade do texto.', 'Informatividade: previsibilidade x novidade.', 'Intertextualidade como princípio da textualidade.', 'Condições de produção, circulação e recepção.', 'Progressão temática e organização textual.'] },
+            { id: 't4', title: 'O dialogismo', subtopics: ['Conceito bakhtiniano de dialogismo.', 'Relação entre enunciados (enunciação, resposta, réplica).', 'Polifonia: vozes sociais no discurso.', 'Heterogeneidade enunciativa.', 'Intertextualidade e interdiscursividade.', 'Implicações para o ensino da língua.'] },
+            { id: 't5', title: 'Os gêneros do discurso/textuais', subtopics: ['Definição bakhtiniana de gênero do discurso.', 'Diferença entre gêneros primários e secundários.', 'Critérios de classificação dos gêneros (tema, estilo, composição).', 'Gêneros como formas de ação social.', 'Função didática dos gêneros no ensino de Língua Portuguesa.', 'BNCC: campos de atuação e gêneros a serem trabalhados.'] },
+            { id: 't6', title: 'O ensino e a aprendizagem da oralidade; da leitura e da produção textual', subtopics: ['Oralidade no espaço escolar: gêneros orais e formais.', 'Leitura: estratégias de compreensão e interpretação.', 'Produção escrita: planejamento, organização, revisão e reescrita.', 'Leitura crítica e análise discursiva.', 'Papel do professor como mediador da leitura e da escrita.', 'Relação com a formação cidadã (BNCC).'] },
+            { id: 't7', title: 'A prática de análise linguística/semiótica a favor da ampliação das práticas de linguagem', subtopics: ['Diferença entre gramática normativa, descritiva e reflexão linguística.', 'Análise linguística: uso da língua em contexto real.', 'Reflexão sobre o funcionamento da língua (variação, norma, uso).', 'A análise semiótica: textos multissemióticos e multimodais.', 'Multiletramentos: integração de linguagens verbal, visual, sonora.', 'Contribuição da análise linguística para práticas de leitura e escrita.'] },
+            { id: 't8', title: 'A formação do leitor literário', subtopics: ['O lugar da literatura na BNCC.', 'Leitura literária como prática de fruição e crítica.', 'Estratégias para formar o leitor autônomo.', 'Literatura e identidade cultural.', 'Experiência estética e subjetiva na leitura.', 'Mediação docente e ampliação do repertório literário.'] },
+            { id: 't9', title: 'Redação: Dissertação Argumentativa em Prosa', subtopics: ['O que é a dissertação argumentativa?', 'Estrutura: introdução, desenvolvimento e conclusão.', 'Como construir uma argumentação sólida.', 'Como usar exemplos e citações na redação.', 'O que é uma redação em prosa?'] }
+        ];
+        
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedSubtopics = new Set();
+        let currentQuestionQuantity = 5;
+        const API_KEY = "AIzaSyATedapm06C9-rMxJjc9CdY39DGLpx3FbA";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+        
+        const KEYWORDS = ['BNCC', 'Vygotsky', 'Bakhtin', 'Coesão', 'Coerência', 'Intencionalidade', 'Aceitabilidade', 'Informatividade', 'Intertextualidade', 'Dialogismo', 'Polifonia', 'Heterogeneidade', 'Multiletramentos', 'Oralidade', 'Leitura', 'Escrita', 'Análise linguística', 'Análise semiótica', 'Leitor literário', 'Fruição', 'Crítica', 'Mediação docente', 'Texto', 'Redação', 'Dissertação Argumentativa', 'Tese', 'Argumento', 'Prosa', 'Introdução', 'Desenvolvimento', 'Conclusão'];
+
+        // Functions to handle screen and modal
+        function showScreen(screenId) {
+            const screens = [homeScreen, mainTopicsScreen, quizScreen, finalScreen];
+            screens.forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+        
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.style.opacity = 1;
+                modal.querySelector('.modal-container').classList.add('is-active');
+            }, 10);
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.opacity = 0;
+            modal.querySelector('.modal-container').classList.remove('is-active');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function processAndStyleContent(text) {
+            let processedText = text;
+
+            // Normalize and clean up extra newlines and markdown list items
+            processedText = processedText.replace(/^- /gm, '').replace(/^\* /gm, '');
+            processedText = processedText.replace(/\n\n/g, '\n');
+
+            // Find and wrap examples in the new highlight class
+            processedText = processedText.replace(/Exemplo: (.*?)(?:\n|$)/g, '<p class="example-highlight">Exemplo: $1</p>');
+            
+            // Convert markdown headings to h3 tags and remove extra symbols
+            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>');
+            processedText = processedText.replace(/###\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
+            processedText = processedText.replace(/##\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
+            processedText = processedText.replace(/#\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
+
+            // Handle lists, ensuring proper structure
+            let finalContent = '';
+            let lines = processedText.split('\n');
+            let inList = false;
+
+            lines.forEach(line => {
+                let trimmedLine = line.trim();
+
+                if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                    if (!inList) {
+                        finalContent += '<ul>';
+                        inList = true;
+                    }
+                    finalContent += `<li>${trimmedLine.substring(2).trim()}</li>`;
+                } else {
+                    if (inList) {
+                        finalContent += '</ul>';
+                        inList = false;
+                    }
+                    if (trimmedLine.length > 0) {
+                        if (trimmedLine.startsWith('<h3') || trimmedLine.startsWith('<p class="example-highlight"')) {
+                             finalContent += trimmedLine;
+                        } else {
+                             finalContent += `<p>${trimmedLine}</p>`;
+                        }
+                    }
+                }
+            });
+
+            if (inList) {
+                finalContent += '</ul>';
+            }
+
+            // Highlight keywords in the final processed text
+            KEYWORDS.forEach(keyword => {
+                const regex = new RegExp(`\\b(${keyword})\\b`, 'gi');
+                finalContent = finalContent.replace(regex, `<span class="highlight">$1</span>`);
+            });
+
+            return finalContent;
+        }
+
+        // Functions to handle topic rendering
+        function renderMainTopics() {
+            mainTopicContainer.innerHTML = '';
+            topics.forEach((topic, index) => {
+                const container = document.createElement('div');
+                container.className = 'topic-container';
+                
+                const topicItem = document.createElement('div');
+                topicItem.id = topic.id;
+                topicItem.className = `topic-item p-4 bg-white rounded-lg shadow-md border-l-8 border-sky-500 transition-all cursor-pointer flex items-center`;
+                topicItem.setAttribute('role', 'button');
+                topicItem.setAttribute('tabindex', '0');
+                topicItem.setAttribute('aria-label', `Abrir subtópicos para ${topic.title}`);
+                topicItem.innerHTML = `
+                    <span class="number text-lg font-bold text-slate-400 mr-4">${index + 1}</span>
+                    <h3 class="font-semibold text-base text-slate-700">${topic.title}</h3>
+                `;
+                
+                const subtopicList = document.createElement('div');
+                subtopicList.className = 'subtopic-list mt-4 ml-8 space-y-2';
+                subtopicList.setAttribute('id', `subtopics-${topic.id}`);
+                
+                topic.subtopics.forEach((subtopic) => {
+                    const subtopicItem = document.createElement('div');
+                    subtopicItem.className = 'subtopic-item flex items-center justify-between';
+                    subtopicItem.innerHTML = `
+                        <label class="flex items-center space-x-2 w-full cursor-pointer" aria-label="${subtopic}">
+                            <input type="checkbox" class="subtopic-checkbox form-checkbox h-5 w-5 text-blue-600 rounded" data-subtopic="${subtopic}">
+                            <span class="text-sm font-medium text-slate-700">${subtopic}</span>
+                        </label>
+                        <button class="study-button flex items-center" aria-label="Estudar ${subtopic}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Estudar
+                        </button>
+                    `;
+                    subtopicItem.querySelector('.study-button').addEventListener('click', () => {
+                        generateStudyContent([subtopic]);
+                    });
+                    subtopicList.appendChild(subtopicItem);
+                });
+                
+                topicItem.addEventListener('click', () => {
+                    const allSubtopicLists = document.querySelectorAll('.subtopic-list');
+                    allSubtopicLists.forEach(list => {
+                        if (list.id !== `subtopics-${topic.id}`) {
+                            list.classList.remove('is-expanded');
+                        }
+                    });
+                    subtopicList.classList.toggle('is-expanded');
+                });
+                
+                container.appendChild(topicItem);
+                container.appendChild(subtopicList);
+                mainTopicContainer.appendChild(container);
+            });
+
+            // Update simulado button state based on checkboxes
+            const checkboxes = document.querySelectorAll('.subtopic-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    selectedSubtopics = new Set(Array.from(document.querySelectorAll('.subtopic-checkbox:checked')).map(cb => cb.dataset.subtopic));
+                    if (selectedSubtopics.size > 0) {
+                        configSimuladoBtn.disabled = false;
+                        configSimuladoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        configSimuladoBtn.disabled = true;
+                        configSimuladoBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                });
+            });
+        }
+        
+        // Functions to handle study content generation
+        async function generateStudyContent(topicsToStudy) {
+            showModal('study-modal');
+            studyLoadingArea.classList.remove('hidden');
+            studyContent.classList.add('hidden');
+            loadingMessage.textContent = "A carregar material de Estudo...";
+            
+            const promptTopics = topicsToStudy.join('; ');
+            const systemPrompt = "Você é um professor de Língua Portuguesa e um especialista em preparar alunos para o exame ProfLetras. Sua tarefa é gerar material de estudo detalhado, claro e didático. Use uma linguagem clara e formal, adequada para um público de pós-graduação. Estruture o conteúdo com títulos e subtítulos em negrito. Para cada conceito, forneça exemplos práticos e bem explicados, destacando a aplicação na vida real ou em contextos acadêmicos. Todos os exemplos devem começar com a frase 'Exemplo: '. Responda apenas com o material de estudo, sem introduções ou conclusões adicionais.";
+            const userQuery = `Gere um material de estudo detalhado sobre o(s) seguinte(s) tópico(s) do ProfLetras: ${promptTopics}.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            // Start a visual progress animation
+            let progress = 0;
+            progressBar.style.width = '0%';
+            const progressInterval = setInterval(() => {
+                progress += 5;
+                if (progress <= 90) { // Stop just before 100%
+                    progressBar.style.width = `${progress}%`;
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, 200);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (generatedText) {
+                    const styledContent = processAndStyleContent(generatedText);
+                    studyContent.innerHTML = styledContent;
+                } else {
+                    studyContent.innerHTML = "<p>Desculpe, não consegui gerar o conteúdo. Tente novamente.</p>";
+                }
+            } catch (error) {
+                console.error("Erro na geração do conteúdo:", error);
+                let errorMessage = "Ocorreu um erro ao conectar-se com o professor virtual. Por favor, tente novamente mais tarde.";
+                if (error.message.includes('403')) {
+                    errorMessage = "Erro de autenticação: A sua chave de API não é válida ou não tem permissão para aceder a este serviço. Por favor, verifique a chave.";
+                } else if (error.message.includes('503')) {
+                    errorMessage = "Serviço Indisponível: O servidor está em manutenção ou sobrecarregado. Por favor, tente novamente em alguns minutos.";
+                }
+                studyContent.innerHTML = `<p>${errorMessage}</p>`;
+            } finally {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    studyLoadingArea.classList.add('hidden');
+                    studyContent.classList.remove('hidden');
+                }, 500);
+            }
+        }
+
+        // Functions to handle quiz
+        async function startSimulado() {
+            showScreen('quiz-screen');
+            quizLoadingArea.classList.remove('hidden');
+            quizContent.classList.add('hidden');
+            
+            const topicsList = Array.from(selectedSubtopics).join('; ');
+            quizLoadingText.textContent = `Gerando ${currentQuestionQuantity} questões sobre: ${topicsList}`;
+
+            const systemPrompt = `Você é um professor de Língua Portuguesa e um especialista em provas de múltipla escolha para o exame ProfLetras. Sua tarefa é criar ${currentQuestionQuantity} questões sobre os tópicos fornecidos, cada uma com 4 opções (A, B, C, D) e uma resposta correta, além de uma breve explicação. A resposta deve ser um objeto JSON.
+
+Exemplo de formato JSON:
+[
+  {
+    "question": "Texto da questão 1.",
+    "options": ["Opção A", "Opção B", "Opção C", "Opção D"],
+    "answer": "B",
+    "explanation": "Explicação detalhada sobre a resposta correta."
+  },
+  {
+    "question": "Texto da questão 2.",
+    "options": ["Opção A", "Opção B", "Opção C", "Opção D"],
+    "answer": "A",
+    "explanation": "Explicação detalhada sobre a resposta correta."
+  }
+]`;
+
+            const userQuery = `Gere ${currentQuestionQuantity} questões de múltipla escolha para um simulado sobre os seguintes tópicos: ${topicsList}.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                "question": { "type": "STRING" },
+                                "options": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "answer": { "type": "STRING" },
+                                "explanation": { "type": "STRING" }
+                            },
+                            "propertyOrdering": ["question", "options", "answer", "explanation"]
+                        }
+                    }
+                }
+            };
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                     throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const result = await response.json();
+                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (jsonText) {
+                    quizQuestions = JSON.parse(jsonText);
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    displayQuestion();
+                } else {
+                    quizLoadingText.textContent = "Erro: Não foi possível gerar as questões. Por favor, tente novamente.";
+                }
+
+            } catch (error) {
+                console.error("Erro ao gerar quiz:", error);
+                quizLoadingText.textContent = "Erro ao gerar o simulado. Por favor, tente novamente.";
+            } finally {
+                quizLoadingArea.classList.add('hidden');
+                quizContent.classList.remove('hidden');
+            }
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex >= quizQuestions.length) {
+                showFinalScreen();
+                return;
+            }
+
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = '';
+            nextQuestionBtn.classList.add('hidden');
+            
+            currentQuestion.options.forEach((option, index) => {
+                const optionButton = document.createElement('button');
+                optionButton.className = 'option-btn';
+                optionButton.textContent = option;
+                optionButton.dataset.option = String.fromCharCode(65 + index); // A, B, C, D
+                optionButton.addEventListener('click', () => checkAnswer(optionButton));
+                optionsContainer.appendChild(optionButton);
+            });
+            
+            questionCounter.textContent = `Questão ${currentQuestionIndex + 1} de ${quizQuestions.length}`;
+            scoreDisplay.textContent = score;
+            progressBarQuiz.style.width = `${((currentQuestionIndex) / quizQuestions.length) * 100}%`;
+        }
+
+        function checkAnswer(selectedButton) {
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            const correctOption = currentQuestion.answer;
+            const allOptions = optionsContainer.querySelectorAll('.option-btn');
+
+            allOptions.forEach(button => {
+                button.classList.add('disabled');
+                if (button.dataset.option === correctOption) {
+                    button.classList.add('correct');
+                } else {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            if (selectedButton.dataset.option === correctOption) {
+                score++;
+                scoreDisplay.textContent = score;
+            }
+
+            nextQuestionBtn.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function showFinalScreen() {
+            const totalQuestions = quizQuestions.length;
+            const correctAnswers = score;
+            const incorrectAnswers = totalQuestions - score;
+
+            finalScoreDisplay.textContent = `${correctAnswers}/${totalQuestions}`;
+            correctAnswersDisplay.textContent = correctAnswers;
+            incorrectAnswersDisplay.textContent = incorrectAnswers;
+            
+            showScreen('final-screen');
+        }
+
+        // Event Listeners
+        startStudiesBtn.addEventListener('click', () => {
+            showScreen('main-topics-screen');
+            renderMainTopics();
+        });
+
+        backToHomeBtn.addEventListener('click', () => {
+            showScreen('home-screen');
+        });
+        
+        closeStudyModalBtn.addEventListener('click', () => hideModal('study-modal'));
+
+        configSimuladoBtn.addEventListener('click', () => {
+            if (selectedSubtopics.size > 0) {
+                showModal('question-quantity-modal');
+            }
+        });
+
+        confirmNumQuestionsBtn.addEventListener('click', () => {
+            currentQuestionQuantity = parseInt(modalQuestionQuantityInput.value, 10);
+            hideModal('question-quantity-modal');
+            startSimulado();
+        });
+        
+        cancelNumQuestionsBtn.addEventListener('click', () => hideModal('question-quantity-modal'));
+        nextQuestionBtn.addEventListener('click', nextQuestion);
+        backToMenuQuizBtn.addEventListener('click', () => showScreen('main-topics-screen'));
+        
+        restartQuizBtn.addEventListener('click', startSimulado);
+        backToMenuFinalBtn.addEventListener('click', () => showScreen('main-topics-screen'));
+        backToHomeFinalBtn.addEventListener('click', () => showScreen('home-screen'));
+
+        // Initialize Firebase on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initFirebase();
+        });
+    </script>
+</body>
+</html>
