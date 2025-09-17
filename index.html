@@ -522,7 +522,17 @@
 
     async function initFirebase() {
         try {
-            const firebaseConfig = JSON.parse(__firebase_config);
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            
+            // Check if the firebaseConfig object is empty, which can happen in certain environments
+            const isConfigEmpty = Object.keys(firebaseConfig).length === 0;
+
+            if (isConfigEmpty) {
+                console.warn("Firebase configuration is empty. Skipping Firebase initialization.");
+                // We can't use Firebase without a config, so we'll just return here.
+                return;
+            }
+
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
@@ -557,7 +567,13 @@
             });
         } catch (error) {
             console.error("Error initializing Firebase:", error);
-            alertMessage(`Ocorreu um erro ao inicializar o Firebase. Por favor, tente novamente mais tarde. Erro: ${error.message}`);
+            if (error.message.includes('auth/invalid-api-key')) {
+                // Silently handle this specific error as it's expected in some environments.
+                console.warn("Firebase: auth/invalid-api-key. Skipping alert.");
+            } else {
+                // Show alert for other, unexpected errors.
+                alertMessage(`Ocorreu um erro ao inicializar o Firebase. Por favor, tente novamente mais tarde. Erro: ${error.message}`);
+            }
         }
     }
     
