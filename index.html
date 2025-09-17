@@ -288,6 +288,16 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .modal-container.modal-fullscreen {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            padding: 0;
+            border-radius: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
@@ -336,27 +346,6 @@
             <main id="main-topic-container" class="space-y-4">
                 <!-- Tópicos serão inseridos dinamicamente aqui -->
             </main>
-            <div class="flex flex-col gap-4 mt-8">
-                <div class="p-6 bg-white rounded-xl shadow-lg border border-slate-200">
-                    <h3 class="text-xl font-bold text-blue-700 mb-2">Ajude um Amigo</h3>
-                    <p class="text-sm text-slate-500 mb-4">
-                        Peça ajuda compartilhando seu ID ou ajude um amigo inserindo o ID dele.
-                    </p>
-                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                        <div class="text-slate-600 font-semibold text-sm">Seu ID: <span id="user-id-display" class="font-mono text-xs bg-slate-100 p-1 rounded-md">Carregando...</span></div>
-                        <button id="copy-user-id-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-1 px-3 rounded-lg text-xs transition-colors shadow-sm">
-                            <svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 4l3-3m0 0l-3-3m3 3h-8"></path></svg>
-                            Copiar
-                        </button>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="friend-id-input" placeholder="ID do amigo" class="flex-grow p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button id="find-friend-help-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-lg">
-                            Ajudar
-                        </button>
-                    </div>
-                </div>
-            </div>
             <footer class="mt-8 text-center flex justify-center items-center gap-4 flex-col sm:flex-row">
                 <button id="config-simulado-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg opacity-50 cursor-not-allowed" disabled>
                     Configurar Simulado
@@ -399,11 +388,6 @@
             </main>
 
             <footer class="mt-6 flex flex-col items-center gap-4 max-w-2xl mx-auto">
-                <div id="help-button-container" class="hidden">
-                    <button id="ask-for-help-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg">
-                        Pedir Ajuda a um Amigo <span id="help-count"></span>
-                    </button>
-                </div>
                 <div class="flex justify-center gap-4">
                     <button id="back-to-menu-quiz" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors">
                         Voltar
@@ -440,6 +424,20 @@
         <!-- Modal de Estudos (existente) -->
         <div id="study-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="study-modal-title">
             <div id="study-modal-container" class="modal-container w-full max-w-2xl aspect-square">
+                <div id="study-modal-header" class="flex justify-between items-center mb-4">
+                    <h2 id="study-modal-title" class="text-2xl font-bold text-blue-700">Material de Estudo</h2>
+                    <div class="flex gap-2">
+                        <button id="toggle-study-modal" class="text-slate-500 hover:text-slate-800 transition-colors" aria-label="Maximizar/Minimizar">
+                            <!-- SVG para maximizar (+) -->
+                            <svg id="maximize-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <!-- SVG para minimizar (-) -->
+                            <svg id="minimize-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path></svg>
+                        </button>
+                        <button id="close-study-modal" class="text-slate-500 hover:text-slate-800 transition-colors" aria-label="Fechar janela de estudo">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
                 <div id="study-loading-area" class="flex flex-col justify-center items-center h-full">
                     <div class="spinner mb-2"></div>
                     <p id="loading-message" class="text-slate-600 font-semibold text-center">A carregar material de Estudo...</p>
@@ -450,12 +448,9 @@
                 <div id="study-content" class="hidden prose max-w-none study-content-container">
                     <!-- Conteúdo de estudo será inserido aqui -->
                 </div>
-                <div class="flex justify-between items-center mt-4">
+                <div class="flex justify-between items-center mt-4" id="study-modal-footer">
                     <button id="download-pdf-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg hidden">
                         Baixar PDF
-                    </button>
-                    <button id="close-study-modal" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors shadow-lg">
-                        Fechar
                     </button>
                 </div>
             </div>
@@ -477,37 +472,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal para Ajudar Amigo -->
-        <div id="help-friend-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-friend-title">
-            <div class="modal-container w-full max-w-lg p-6">
-                <h3 id="help-friend-title" class="text-2xl font-bold text-blue-700 mb-4">Ajude seu Amigo</h3>
-                <div id="help-request-container" class="flex flex-col gap-4">
-                    <div id="help-loading" class="flex flex-col justify-center items-center h-40 hidden">
-                        <div class="spinner mb-2"></div>
-                        <p class="text-slate-600 font-semibold">Buscando pedido de ajuda...</p>
-                    </div>
-                    <div id="help-content" class="hidden">
-                        <p class="mb-4 text-slate-600">Seu amigo precisa de ajuda com a seguinte questão:</p>
-                        <p id="friend-question-text" class="text-lg md:text-xl mb-4"></p>
-                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md">
-                            <p class="font-semibold">Resposta do seu amigo (Incorreta):</p>
-                            <p id="friend-incorrect-answer-text"></p>
-                        </div>
-                        <p class="font-semibold text-slate-700 mb-2">Qual é a resposta correta?</p>
-                        <div id="help-options-container" class="flex flex-col space-y-3">
-                            <!-- Opções para o helper serão inseridas aqui -->
-                        </div>
-                        <div id="help-result-message" class="mt-4 font-semibold text-center"></div>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-3 mt-6">
-                    <button id="close-help-friend-modal" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-5 rounded-lg transition-colors">
-                        Fechar
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
 <script type="module">
@@ -517,7 +481,6 @@
 
     // Firebase Initialization
     let app, auth, db, userId;
-    let helpRequestsCollection;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
     async function initFirebase() {
@@ -547,22 +510,6 @@
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     userId = user.uid;
-                    document.getElementById('user-id-display').textContent = userId;
-                    const userDocRef = doc(db, "artifacts", appId, "users", userId, "userData", "profile");
-                    setDoc(userDocRef, { friendsHelpCount: 3 }, { merge: true });
-                    
-                    // Listen for help requests for this user
-                    helpRequestsCollection = collection(db, "artifacts", appId, "public", "data", "help_requests");
-                    const q = query(helpRequestsCollection, where("requesterId", "==", userId));
-                    onSnapshot(q, (querySnapshot) => {
-                        querySnapshot.docChanges().forEach((change) => {
-                            if (change.type === "removed") {
-                                // This means the friend has helped and the request was deleted
-                                hideModal('study-modal');
-                                alertMessage("Seu amigo respondeu à sua pergunta! O pedido de ajuda foi removido.");
-                            }
-                        });
-                    });
                 }
             });
         } catch (error) {
@@ -597,6 +544,7 @@
     const closeStudyModalBtn = document.getElementById('close-study-modal');
     const finalScreen = document.getElementById('final-screen');
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    const toggleStudyModalBtn = document.getElementById('toggle-study-modal');
 
     // Quiz DOM elements
     const quizScreen = document.getElementById('quiz-screen');
@@ -617,22 +565,6 @@
     const restartQuizBtn = document.getElementById('restart-quiz-btn');
     const backToMenuFinalBtn = document.getElementById('back-to-menu-final-btn');
     const backToHomeFinalBtn = document.getElementById('back-to-home-final-btn');
-    
-    // Help-a-friend DOM elements
-    const userIdDisplay = document.getElementById('user-id-display');
-    const copyUserIdBtn = document.getElementById('copy-user-id-btn');
-    const helpFriendModal = document.getElementById('help-friend-modal');
-    const friendIdInput = document.getElementById('friend-id-input');
-    const findFriendHelpBtn = document.getElementById('find-friend-help-btn');
-    const closeHelpFriendModal = document.getElementById('close-help-friend-modal');
-    const helpLoading = document.getElementById('help-loading');
-    const helpContent = document.getElementById('help-content');
-    const friendQuestionText = document.getElementById('friend-question-text');
-    const friendIncorrectAnswerText = document.getElementById('friend-incorrect-answer-text');
-    const helpOptionsContainer = document.getElementById('help-options-container');
-    const helpResultMessage = document.getElementById('help-result-message');
-    const askForHelpBtn = document.getElementById('ask-for-help-btn');
-    const helpButtonContainer = document.getElementById('help-button-container');
 
     // Data Structure for Topics and Subtopics
     const topics = [
@@ -675,6 +607,7 @@
                 const modalContainer = modal.querySelector('.modal-container');
                 if (modalContainer) {
                     modalContainer.classList.add('is-active');
+                    modalContainer.classList.remove('modal-fullscreen');
                 }
             }, 10);
         }
@@ -1047,7 +980,6 @@
         showScreen('quiz-screen');
         quizLoadingArea.classList.remove('hidden');
         quizContent.classList.add('hidden');
-        helpButtonContainer.classList.add('hidden');
         
         const topicsList = Array.from(selectedSubtopics).join('; ');
         quizLoadingText.textContent = `Gerando ${currentQuestionQuantity} questões sobre: ${topicsList}`;
@@ -1135,7 +1067,6 @@ Exemplo de formato JSON:
         questionText.textContent = currentQuestion.question;
         optionsContainer.innerHTML = '';
         nextQuestionBtn.classList.add('hidden');
-        helpButtonContainer.classList.add('hidden');
         
         currentQuestion.options.forEach((option, index) => {
             const optionButton = document.createElement('button');
@@ -1169,17 +1100,9 @@ Exemplo de formato JSON:
         if (selectedButton.dataset.option === correctOption) {
             score++;
             isCorrect = true;
-        } else {
-            helpButtonContainer.classList.remove('hidden');
         }
         scoreDisplay.textContent = score;
         nextQuestionBtn.classList.remove('hidden');
-
-        // Store incorrect answer for help request
-        const incorrectAnswer = selectedButton.textContent;
-        const correctAnswer = allOptions[correctOption.charCodeAt(0) - 65].textContent;
-        selectedButton.dataset.incorrectAnswer = incorrectAnswer;
-        selectedButton.dataset.correctAnswer = correctAnswer;
     }
 
     function nextQuestion() {
@@ -1199,116 +1122,6 @@ Exemplo de formato JSON:
         showScreen('final-screen');
     }
 
-    async function askForHelp() {
-        const userDocRef = doc(db, "artifacts", appId, "users", userId, "userData", "profile");
-        const userDoc = await getDoc(userDocRef);
-        const friendsHelpCount = userDoc.data()?.friendsHelpCount || 0;
-        
-        if (friendsHelpCount > 0) {
-            const currentQuestion = quizQuestions[currentQuestionIndex];
-            const selectedButton = optionsContainer.querySelector('.option-btn.incorrect');
-            const helpRequest = {
-                requesterId: userId,
-                question: currentQuestion.question,
-                incorrectAnswer: selectedButton.textContent,
-                correctAnswer: currentQuestion.options[currentQuestion.answer.charCodeAt(0) - 65],
-                timestamp: Date.now()
-            };
-
-            try {
-                const helpRequestDocRef = await addDoc(collection(db, "artifacts", appId, "public", "data", "help_requests"), helpRequest);
-                await updateDoc(userDocRef, { friendsHelpCount: friendsHelpCount - 1 });
-                
-                alertMessage(`Pedido de ajuda enviado com sucesso! Peça para um amigo inserir seu ID (${userId}) para responder.`);
-                document.getElementById('help-count').textContent = `(${friendsHelpCount - 1} restantes)`;
-                helpButtonContainer.classList.add('hidden');
-            } catch (error) {
-                console.error("Erro ao enviar pedido de ajuda:", error);
-                alertMessage("Não foi possível enviar o pedido de ajuda. Tente novamente.");
-            }
-        } else {
-            alertMessage("Você não tem mais pedidos de ajuda disponíveis.");
-        }
-    }
-    
-    async function findHelpRequest() {
-        const friendId = friendIdInput.value.trim();
-        if (!friendId) {
-            alertMessage("Por favor, insira o ID do seu amigo.");
-            return;
-        }
-
-        showModal('help-friend-modal');
-        helpLoading.classList.remove('hidden');
-        helpContent.classList.add('hidden');
-        
-        try {
-            const q = query(collection(db, "artifacts", appId, "public", "data", "help_requests"), where("requesterId", "==", friendId));
-            const querySnapshot = await getDocs(q);
-            
-            if (querySnapshot.empty) {
-                helpLoading.classList.add('hidden');
-                alertMessage("Não há pedidos de ajuda pendentes para este ID.");
-                hideModal('help-friend-modal');
-                return;
-            }
-            
-            const helpDoc = querySnapshot.docs[0];
-            const helpData = helpDoc.data();
-            
-            friendQuestionText.textContent = helpData.question;
-            friendIncorrectAnswerText.textContent = helpData.incorrectAnswer;
-            
-            // Randomize options for the helper
-            const options = [...new Set([helpData.correctAnswer, helpData.incorrectAnswer, 'Opção Aleatória 1', 'Opção Aleatória 2'])];
-            options.sort(() => Math.random() - 0.5);
-
-            helpOptionsContainer.innerHTML = '';
-            options.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.textContent = option;
-                button.addEventListener('click', () => checkHelperAnswer(button, helpData.correctAnswer, helpDoc.id));
-                helpOptionsContainer.appendChild(button);
-            });
-
-            helpLoading.classList.add('hidden');
-            helpContent.classList.remove('hidden');
-
-        } catch (error) {
-            console.error("Erro ao buscar pedido de ajuda:", error);
-            helpLoading.classList.add('hidden');
-            alertMessage("Ocorreu um erro ao buscar o pedido de ajuda. Tente novamente.");
-        }
-    }
-
-    async function checkHelperAnswer(selectedButton, correctAnswer, docId) {
-        const allOptions = helpOptionsContainer.querySelectorAll('.option-btn');
-        allOptions.forEach(button => button.classList.add('disabled'));
-        
-        if (selectedButton.textContent === correctAnswer) {
-            selectedButton.classList.add('correct');
-            helpResultMessage.textContent = "Resposta correta! Ótima ajuda!";
-            helpResultMessage.classList.remove('text-red-600');
-            helpResultMessage.classList.add('text-green-600');
-            try {
-                await deleteDoc(doc(db, "artifacts", appId, "public", "data", "help_requests", docId));
-            } catch (error) {
-                console.error("Erro ao deletar documento de ajuda:", error);
-            }
-        } else {
-            selectedButton.classList.add('incorrect');
-            allOptions.forEach(button => {
-                if (button.textContent === correctAnswer) {
-                    button.classList.add('correct');
-                }
-            });
-            helpResultMessage.textContent = "Resposta incorreta. Tente novamente!";
-            helpResultMessage.classList.remove('text-green-600');
-            helpResultMessage.classList.add('text-red-600');
-        }
-    }
-
     // Event Listeners
     startStudiesBtn.addEventListener('click', () => {
         showScreen('main-topics-screen');
@@ -1320,6 +1133,24 @@ Exemplo de formato JSON:
     });
     
     closeStudyModalBtn.addEventListener('click', () => hideModal('study-modal'));
+
+    toggleStudyModalBtn.addEventListener('click', () => {
+        const isFullscreen = studyModalContainer.classList.toggle('modal-fullscreen');
+        const maximizeIcon = document.getElementById('maximize-icon');
+        const minimizeIcon = document.getElementById('minimize-icon');
+
+        if (isFullscreen) {
+            maximizeIcon.style.display = 'none';
+            minimizeIcon.style.display = 'block';
+            studyModalContainer.style.overflowY = 'auto';
+            studyContent.style.overflowY = 'unset';
+        } else {
+            maximizeIcon.style.display = 'block';
+            minimizeIcon.style.display = 'none';
+            studyModalContainer.style.overflowY = 'unset';
+            studyContent.style.overflowY = 'auto';
+        }
+    });
 
     // Novo listener para o botão de download de PDF
     downloadPdfBtn.addEventListener('click', () => {
@@ -1345,20 +1176,6 @@ Exemplo de formato JSON:
     restartQuizBtn.addEventListener('click', startSimulado);
     backToMenuFinalBtn.addEventListener('click', () => showScreen('main-topics-screen'));
     backToHomeFinalBtn.addEventListener('click', () => showScreen('home-screen'));
-
-    // New Event Listeners for Help a Friend feature
-    copyUserIdBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(userId).then(() => {
-            alertMessage("ID copiado para a área de transferência!");
-        }).catch(err => {
-            console.error('Erro ao copiar ID: ', err);
-            alertMessage("Não foi possível copiar o ID. Por favor, copie manualmente.");
-        });
-    });
-
-    findFriendHelpBtn.addEventListener('click', findHelpRequest);
-    closeHelpFriendModal.addEventListener('click', () => hideModal('help-friend-modal'));
-    askForHelpBtn.addEventListener('click', askForHelp);
 
     // Initialize Firebase on load
     document.addEventListener('DOMContentLoaded', () => {
