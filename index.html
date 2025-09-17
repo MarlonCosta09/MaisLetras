@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>+Letras - Prática de Língua Portuguesa</title>
+    <title>ProfMais+ - Prática de Língua Portuguesa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <!-- Adicionando as bibliotecas para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(to bottom right, #d1fae5, #e0f2fe);
         }
         .title-font {
-            font-family: 'Roboto Slab', serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
         }
         .text-background-overlay {
             position: absolute;
@@ -24,7 +28,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
-            color: rgba(100, 100, 100, 0.08);
+            color: rgba(100, 100, 100, 0.05); /* Maior transparência */
             font-size: 1.8rem;
             line-height: 1.8;
             text-align: center;
@@ -32,13 +36,13 @@
             word-break: break-all;
             white-space: pre-wrap;
             user-select: none;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.03); /* Sombra mais subtil */
             background-image: repeating-linear-gradient(
                 45deg,
                 transparent,
                 transparent 100px,
-                rgba(220, 220, 220, 0.03) 100px,
-                rgba(220, 220, 220, 0.03) 200px
+                rgba(220, 220, 220, 0.02) 100px, /* Ajuste para mais transparência no gradiente também */
+                rgba(220, 220, 220, 0.02) 200px
             );
         }
         .topic-item {
@@ -298,7 +302,9 @@
             </div>
 
             <header class="mb-10 relative z-10">
-                <h1 class="text-5xl md:text-6xl font-bold text-emerald-600 title-font">+Letras</h1>
+                <h1 class="text-6xl md:text-7xl font-bold title-font">
+                    <span class="text-emerald-600">Prof</span><span class="text-blue-600">Mais+</span>
+                </h1>
                 <p class="text-slate-500 mt-2 text-lg">Sua aprovação no ProfLetras!</p>
             </header>
             <main class="flex justify-center items-center h-64 relative z-10">
@@ -322,12 +328,35 @@
         <!-- Tela de Seleção de Tópico Principal (nova) -->
         <div id="main-topics-screen" class="hidden">
             <header class="text-center mb-10">
-                <h1 class="text-5xl md:text-6xl font-bold text-slate-700 title-font">+Letras</h1>
+                <h1 class="text-6xl md:text-7xl font-bold title-font">
+                    <span class="text-emerald-600">Prof</span><span class="text-blue-600">Mais+</span>
+                </h1>
                 <p class="text-slate-500 mt-2 text-lg">Selecione um tópico principal.</p>
             </header>
             <main id="main-topic-container" class="space-y-4">
                 <!-- Tópicos serão inseridos dinamicamente aqui -->
             </main>
+            <div class="flex flex-col gap-4 mt-8">
+                <div class="p-6 bg-white rounded-xl shadow-lg border border-slate-200">
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">Ajude um Amigo</h3>
+                    <p class="text-sm text-slate-500 mb-4">
+                        Peça ajuda compartilhando seu ID ou ajude um amigo inserindo o ID dele.
+                    </p>
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <div class="text-slate-600 font-semibold text-sm">Seu ID: <span id="user-id-display" class="font-mono text-xs bg-slate-100 p-1 rounded-md">Carregando...</span></div>
+                        <button id="copy-user-id-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-1 px-3 rounded-lg text-xs transition-colors shadow-sm">
+                            <svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 4l3-3m0 0l-3-3m3 3h-8"></path></svg>
+                            Copiar
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="friend-id-input" placeholder="ID do amigo" class="flex-grow p-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="find-friend-help-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-lg">
+                            Ajudar
+                        </button>
+                    </div>
+                </div>
+            </div>
             <footer class="mt-8 text-center flex justify-center items-center gap-4 flex-col sm:flex-row">
                 <button id="config-simulado-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg opacity-50 cursor-not-allowed" disabled>
                     Configurar Simulado
@@ -369,13 +398,20 @@
                 </div>
             </main>
 
-            <footer class="mt-6 flex justify-center items-center gap-4 max-w-2xl mx-auto">
-                <button id="back-to-menu-quiz" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors">
-                    Voltar
-                </button>
-                <button id="next-question-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg hidden">
-                    Próxima Pergunta &rarr;
-                </button>
+            <footer class="mt-6 flex flex-col items-center gap-4 max-w-2xl mx-auto">
+                <div id="help-button-container" class="hidden">
+                    <button id="ask-for-help-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg">
+                        Pedir Ajuda a um Amigo <span id="help-count"></span>
+                    </button>
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button id="back-to-menu-quiz" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors">
+                        Voltar
+                    </button>
+                    <button id="next-question-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg hidden">
+                        Próxima Pergunta &rarr;
+                    </button>
+                </div>
             </footer>
         </div>
 
@@ -396,10 +432,10 @@
                     Escolher outro Tópico
                 </button>
                 <button id="back-to-home-final-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg transition-colors">
-                    Voltar à Tela Inicial
-                </button>
-            </div>
+                Voltar à Tela Inicial
+            </button>
         </div>
+    </div>
 
         <!-- Modal de Estudos (existente) -->
         <div id="study-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="study-modal-title">
@@ -414,9 +450,14 @@
                 <div id="study-content" class="hidden prose max-w-none study-content-container">
                     <!-- Conteúdo de estudo será inserido aqui -->
                 </div>
-                <button id="close-study-modal" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 transition-colors" aria-label="Fechar janela de estudo">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+                <div class="flex justify-between items-center mt-4">
+                    <button id="download-pdf-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg hidden">
+                        Baixar PDF
+                    </button>
+                    <button id="close-study-modal" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors shadow-lg">
+                        Fechar
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -436,346 +477,566 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal para Ajudar Amigo -->
+        <div id="help-friend-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-friend-title">
+            <div class="modal-container w-full max-w-lg p-6">
+                <h3 id="help-friend-title" class="text-2xl font-bold text-blue-700 mb-4">Ajude seu Amigo</h3>
+                <div id="help-request-container" class="flex flex-col gap-4">
+                    <div id="help-loading" class="flex flex-col justify-center items-center h-40 hidden">
+                        <div class="spinner mb-2"></div>
+                        <p class="text-slate-600 font-semibold">Buscando pedido de ajuda...</p>
+                    </div>
+                    <div id="help-content" class="hidden">
+                        <p class="mb-4 text-slate-600">Seu amigo precisa de ajuda com a seguinte questão:</p>
+                        <p id="friend-question-text" class="text-lg md:text-xl mb-4"></p>
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md">
+                            <p class="font-semibold">Resposta do seu amigo (Incorreta):</p>
+                            <p id="friend-incorrect-answer-text"></p>
+                        </div>
+                        <p class="font-semibold text-slate-700 mb-2">Qual é a resposta correta?</p>
+                        <div id="help-options-container" class="flex flex-col space-y-3">
+                            <!-- Opções para o helper serão inseridas aqui -->
+                        </div>
+                        <div id="help-result-message" class="mt-4 font-semibold text-center"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button id="close-help-friend-modal" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-5 rounded-lg transition-colors">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Initialization
-        let app, auth, db, userId;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    // Firebase Initialization
+    let app, auth, db, userId;
+    let helpRequestsCollection;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        async function initFirebase() {
-            try {
-                const firebaseConfig = JSON.parse(__firebase_config);
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        const userDocRef = doc(db, "artifacts", appId, "users", userId, "userData", "profile");
-                        setDoc(userDocRef, { friendsHelpCount: 3 }, { merge: true });
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
+    async function initFirebase() {
+        try {
+            const firebaseConfig = JSON.parse(__firebase_config);
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
             }
-        }
-        
-        // DOM Elements
-        const homeScreen = document.getElementById('home-screen');
-        const mainTopicsScreen = document.getElementById('main-topics-screen');
-        const startStudiesBtn = document.getElementById('start-studies-btn');
-        const mainTopicContainer = document.getElementById('main-topic-container');
-        const backToHomeBtn = document.getElementById('back-to-home-btn');
-        const configSimuladoBtn = document.getElementById('config-simulado-btn');
-        const questionQuantityModal = document.getElementById('question-quantity-modal');
-        const modalQuestionQuantityInput = document.getElementById('modal-question-quantity-input');
-        const confirmNumQuestionsBtn = document.getElementById('confirm-num-questions-btn');
-        const cancelNumQuestionsBtn = document.getElementById('cancel-num-questions-btn');
-        const studyModal = document.getElementById('study-modal');
-        const studyModalContainer = document.getElementById('study-modal-container');
-        const studyLoadingArea = document.getElementById('study-loading-area');
-        const loadingMessage = document.getElementById('loading-message');
-        const progressBar = document.getElementById('progress-bar');
-        const studyContent = document.getElementById('study-content');
-        const closeStudyModalBtn = document.getElementById('close-study-modal');
-        const finalScreen = document.getElementById('final-screen');
 
-        // Quiz DOM elements
-        const quizScreen = document.getElementById('quiz-screen');
-        const quizLoadingArea = document.getElementById('quiz-loading-area');
-        const quizLoadingText = document.getElementById('quiz-loading-text');
-        const quizContent = document.getElementById('quiz-content');
-        const quizTopicTitle = document.getElementById('quiz-topic-title');
-        const questionCounter = document.getElementById('question-counter');
-        const scoreDisplay = document.getElementById('score');
-        const progressBarQuiz = document.getElementById('progress-bar-quiz');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const nextQuestionBtn = document.getElementById('next-question-btn');
-        const backToMenuQuizBtn = document.getElementById('back-to-menu-quiz');
-        const finalScoreDisplay = document.getElementById('final-score-display');
-        const correctAnswersDisplay = document.getElementById('correct-answers-display');
-        const incorrectAnswersDisplay = document.getElementById('incorrect-answers-display');
-        const restartQuizBtn = document.getElementById('restart-quiz-btn');
-        const backToMenuFinalBtn = document.getElementById('back-to-menu-final-btn');
-        const backToHomeFinalBtn = document.getElementById('back-to-home-final-btn');
-        
-        // Data Structure for Topics and Subtopics
-        const topics = [
-            { id: 't1', title: 'O texto como unidade de trabalho', subtopics: ['Concepções de texto: estrutural, funcional, sociointeracionista.', 'Texto como centro das práticas de linguagem (BNCC).', 'Critérios de textualidade (coerência, coesão, situacionalidade etc.).', 'Texto como prática social (interação, circulação, finalidade).', 'Texto no ensino: objeto de ensino e instrumento de aprendizagem.'] },
-            { id: 't2', title: 'As práticas de linguagem', subtopics: ['Modalidades: oralidade, leitura, escrita, análise linguística.', 'Perspectiva sociointeracionista (Vygotsky, Bakhtin, PCN/BNCC).', 'Funções da linguagem em contextos sociais.', 'Práticas de linguagem no cotidiano e na escola.', 'Multiletramentos e práticas de linguagem digitais.'] },
-            { id: 't3', title: 'A construção da textualidade', subtopics: ['Coesão e coerência: mecanismos e estratégias.', 'Intencionalidade e aceitabilidade do texto.', 'Informatividade: previsibilidade x novidade.', 'Intertextualidade como princípio da textualidade.', 'Condições de produção, circulação e recepção.', 'Progressão temática e organização textual.'] },
-            { id: 't4', title: 'O dialogismo', subtopics: ['Conceito bakhtiniano de dialogismo.', 'Relação entre enunciados (enunciação, resposta, réplica).', 'Polifonia: vozes sociais no discurso.', 'Heterogeneidade enunciativa.', 'Intertextualidade e interdiscursividade.', 'Implicações para o ensino da língua.'] },
-            { id: 't5', title: 'Os gêneros do discurso/textuais', subtopics: ['Definição bakhtiniana de gênero do discurso.', 'Diferença entre gêneros primários e secundários.', 'Critérios de classificação dos gêneros (tema, estilo, composição).', 'Gêneros como formas de ação social.', 'Função didática dos gêneros no ensino de Língua Portuguesa.', 'BNCC: campos de atuação e gêneros a serem trabalhados.'] },
-            { id: 't6', title: 'O ensino e a aprendizagem da oralidade; da leitura e da produção textual', subtopics: ['Oralidade no espaço escolar: gêneros orais e formais.', 'Leitura: estratégias de compreensão e interpretação.', 'Produção escrita: planejamento, organização, revisão e reescrita.', 'Leitura crítica e análise discursiva.', 'Papel do professor como mediador da leitura e da escrita.', 'Relação com a formação cidadã (BNCC).'] },
-            { id: 't7', title: 'A prática de análise linguística/semiótica a favor da ampliação das práticas de linguagem', subtopics: ['Diferença entre gramática normativa, descritiva e reflexão linguística.', 'Análise linguística: uso da língua em contexto real.', 'Reflexão sobre o funcionamento da língua (variação, norma, uso).', 'A análise semiótica: textos multissemióticos e multimodais.', 'Multiletramentos: integração de linguagens verbal, visual, sonora.', 'Contribuição da análise linguística para práticas de leitura e escrita.'] },
-            { id: 't8', title: 'A formação do leitor literário', subtopics: ['O lugar da literatura na BNCC.', 'Leitura literária como prática de fruição e crítica.', 'Estratégias para formar o leitor autônomo.', 'Literatura e identidade cultural.', 'Experiência estética e subjetiva na leitura.', 'Mediação docente e ampliação do repertório literário.'] },
-            { id: 't9', title: 'Redação: Dissertação Argumentativa em Prosa', subtopics: ['O que é a dissertação argumentativa?', 'Estrutura: introdução, desenvolvimento e conclusão.', 'Como construir uma argumentação sólida.', 'Como usar exemplos e citações na redação.', 'O que é uma redação em prosa?'] }
-        ];
-        
-        let quizQuestions = [];
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let selectedSubtopics = new Set();
-        let currentQuestionQuantity = 5;
-        const API_KEY = "AIzaSyATedapm06C9-rMxJjc9CdY39DGLpx3FbA";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
-        
-        const KEYWORDS = ['BNCC', 'Vygotsky', 'Bakhtin', 'Coesão', 'Coerência', 'Intencionalidade', 'Aceitabilidade', 'Informatividade', 'Intertextualidade', 'Dialogismo', 'Polifonia', 'Heterogeneidade', 'Multiletramentos', 'Oralidade', 'Leitura', 'Escrita', 'Análise linguística', 'Análise semiótica', 'Leitor literário', 'Fruição', 'Crítica', 'Mediação docente', 'Texto', 'Redação', 'Dissertação Argumentativa', 'Tese', 'Argumento', 'Prosa', 'Introdução', 'Desenvolvimento', 'Conclusão'];
-
-        // Functions to handle screen and modal
-        function showScreen(screenId) {
-            const screens = [homeScreen, mainTopicsScreen, quizScreen, finalScreen];
-            screens.forEach(screen => {
-                screen.classList.add('hidden');
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('user-id-display').textContent = userId;
+                    const userDocRef = doc(db, "artifacts", appId, "users", userId, "userData", "profile");
+                    setDoc(userDocRef, { friendsHelpCount: 3 }, { merge: true });
+                    
+                    // Listen for help requests for this user
+                    helpRequestsCollection = collection(db, "artifacts", appId, "public", "data", "help_requests");
+                    const q = query(helpRequestsCollection, where("requesterId", "==", userId));
+                    onSnapshot(q, (querySnapshot) => {
+                        querySnapshot.docChanges().forEach((change) => {
+                            if (change.type === "removed") {
+                                // This means the friend has helped and the request was deleted
+                                hideModal('study-modal');
+                                alertMessage("Seu amigo respondeu à sua pergunta! O pedido de ajuda foi removido.");
+                            }
+                        });
+                    });
+                }
             });
-            document.getElementById(screenId).classList.remove('hidden');
+        } catch (error) {
+            console.error("Error initializing Firebase:", error);
+            alertMessage(`Ocorreu um erro ao inicializar o Firebase. Por favor, tente novamente mais tarde. Erro: ${error.message}`);
         }
-        
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
+    }
+    
+    // DOM Elements
+    const homeScreen = document.getElementById('home-screen');
+    const mainTopicsScreen = document.getElementById('main-topics-screen');
+    const startStudiesBtn = document.getElementById('start-studies-btn');
+    const mainTopicContainer = document.getElementById('main-topic-container');
+    const backToHomeBtn = document.getElementById('back-to-home-btn');
+    const configSimuladoBtn = document.getElementById('config-simulado-btn');
+    const questionQuantityModal = document.getElementById('question-quantity-modal');
+    const modalQuestionQuantityInput = document.getElementById('modal-question-quantity-input');
+    const confirmNumQuestionsBtn = document.getElementById('confirm-num-questions-btn');
+    const cancelNumQuestionsBtn = document.getElementById('cancel-num-questions-btn');
+    const studyModal = document.getElementById('study-modal');
+    const studyModalContainer = document.getElementById('study-modal-container');
+    const studyLoadingArea = document.getElementById('study-loading-area');
+    const loadingMessage = document.getElementById('loading-message');
+    const progressBar = document.getElementById('progress-bar');
+    const studyContent = document.getElementById('study-content');
+    const closeStudyModalBtn = document.getElementById('close-study-modal');
+    const finalScreen = document.getElementById('final-screen');
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+
+    // Quiz DOM elements
+    const quizScreen = document.getElementById('quiz-screen');
+    const quizLoadingArea = document.getElementById('quiz-loading-area');
+    const quizLoadingText = document.getElementById('quiz-loading-text');
+    const quizContent = document.getElementById('quiz-content');
+    const quizTopicTitle = document.getElementById('quiz-topic-title');
+    const questionCounter = document.getElementById('question-counter');
+    const scoreDisplay = document.getElementById('score');
+    const progressBarQuiz = document.getElementById('progress-bar-quiz');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const backToMenuQuizBtn = document.getElementById('back-to-menu-quiz');
+    const finalScoreDisplay = document.getElementById('final-score-display');
+    const correctAnswersDisplay = document.getElementById('correct-answers-display');
+    const incorrectAnswersDisplay = document.getElementById('incorrect-answers-display');
+    const restartQuizBtn = document.getElementById('restart-quiz-btn');
+    const backToMenuFinalBtn = document.getElementById('back-to-menu-final-btn');
+    const backToHomeFinalBtn = document.getElementById('back-to-home-final-btn');
+    
+    // Help-a-friend DOM elements
+    const userIdDisplay = document.getElementById('user-id-display');
+    const copyUserIdBtn = document.getElementById('copy-user-id-btn');
+    const helpFriendModal = document.getElementById('help-friend-modal');
+    const friendIdInput = document.getElementById('friend-id-input');
+    const findFriendHelpBtn = document.getElementById('find-friend-help-btn');
+    const closeHelpFriendModal = document.getElementById('close-help-friend-modal');
+    const helpLoading = document.getElementById('help-loading');
+    const helpContent = document.getElementById('help-content');
+    const friendQuestionText = document.getElementById('friend-question-text');
+    const friendIncorrectAnswerText = document.getElementById('friend-incorrect-answer-text');
+    const helpOptionsContainer = document.getElementById('help-options-container');
+    const helpResultMessage = document.getElementById('help-result-message');
+    const askForHelpBtn = document.getElementById('ask-for-help-btn');
+    const helpButtonContainer = document.getElementById('help-button-container');
+
+    // Data Structure for Topics and Subtopics
+    const topics = [
+        { id: 't1', title: 'O texto como unidade de trabalho', subtopics: ['Concepções de texto: estrutural, funcional, sociointeracionista.', 'Texto como centro das práticas de linguagem (BNCC).', 'Critérios de textualidade (coerência, coesão, situacionalidade etc.).', 'Texto como prática social (interação, circulação, finalidade).', 'Texto no ensino: objeto de ensino e instrumento de aprendizagem.'] },
+        { id: 't2', title: 'As práticas de linguagem', subtopics: ['Modalidades: oralidade, leitura, escrita, análise linguística.', 'Perspectiva sociointeracionista (Vygotsky, Bakhtin, PCN/BNCC).', 'Funções da linguagem em contextos sociais.', 'Práticas de linguagem no cotidiano e na escola.', 'Multiletramentos e práticas de linguagem digitais.'] },
+        { id: 't3', title: 'A construção da textualidade', subtopics: ['Coesão e coerência: mecanismos e estratégias.', 'Intencionalidade e aceitabilidade do texto.', 'Informatividade: previsibilidade x novidade.', 'Intertextualidade como princípio da textualidade.', 'Condições de produção, circulação e recepção.', 'Progressão temática e organização textual.'] },
+        { id: 't4', title: 'O dialogismo', subtopics: ['Conceito bakhtiniano de dialogismo.', 'Relação entre enunciados (enunciação, resposta, réplica).', 'Polifonia: vozes sociais no discurso.', 'Heterogeneidade enunciativa.', 'Intertextualidade e interdiscursividade.', 'Implicações para o ensino da língua.'] },
+        { id: 't5', title: 'Os gêneros do discurso/textuais', subtopics: ['Definição bakhtiniana de gênero do discurso.', 'Diferença entre gêneros primários e secundários.', 'Critérios de classificação dos gêneros (tema, estilo, composição).', 'Gêneros como formas de ação social.', 'Função didática dos gêneros no ensino de Língua Portuguesa.', 'BNCC: campos de atuação e gêneros a serem trabalhados.'] },
+        { id: 't6', title: 'O ensino e a aprendizagem da oralidade; da leitura e da produção textual', subtopics: ['Oralidade no espaço escolar: gêneros orais e formais.', 'Leitura: estratégias de compreensão e interpretação.', 'Produção escrita: planejamento, organização, revisão e reescrita.', 'Leitura crítica e análise discursiva.', 'Papel do professor como mediador da leitura e da escrita.', 'Relação com a formação cidadã (BNCC).'] },
+        { id: 't7', title: 'A prática de análise linguística/semiótica a favor da ampliação das práticas de linguagem', subtopics: ['Diferença entre gramática normativa, descritiva e reflexão linguística.', 'Análise linguística: uso da língua em contexto real.', 'Reflexão sobre o funcionamento da língua (variação, norma, uso).', 'A análise semiótica: textos multissemióticos e multimodais.', 'Multiletramentos: integração de linguagens verbal, visual, sonora.', 'Contribuição da análise linguística para práticas de leitura e escrita.'] },
+        { id: 't8', title: 'A formação do leitor literário', subtopics: ['O lugar da literatura na BNCC.', 'Leitura literária como prática de fruição e crítica.', 'Estratégias para formar o leitor autônomo.', 'Literatura e identidade cultural.', 'Experiência estética e subjetiva na leitura.', 'Mediação docente e ampliação do repertório literário.'] },
+        { id: 't9', title: 'Redação: Dissertação Argumentativa em Prosa', subtopics: ['O que é a dissertação argumentativa?', 'O que é uma redação em prosa? Um texto em prosa é o oposto da poesia. A prosa é escrita em parágrafos, de forma corrida, sem a preocupação com o ritmo e a rima.', 'Estrutura: introdução, desenvolvimento e conclusão.', 'Como construir uma argumentação sólida.', 'Como usar exemplos e citações na redação.'] }
+    ];
+    
+    let quizQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedSubtopics = new Set();
+    let currentQuestionQuantity = 5;
+    const API_KEY = ""; // Use empty string for Canvas
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+    
+    const KEYWORDS = ['BNCC', 'Vygotsky', 'Bakhtin', 'Coesão', 'Coerência', 'Intencionalidade', 'Aceitabilidade', 'Informatividade', 'Intertextualidade', 'Dialogismo', 'Polifonia', 'Heterogeneidade', 'Multiletramentos', 'Oralidade', 'Leitura', 'Escrita', 'Análise linguística', 'Análise semiótica', 'Leitor literário', 'Fruição', 'Crítica', 'Mediação docente', 'Texto', 'Redação', 'Dissertação Argumentativa', 'Tese', 'Argumento', 'Prosa', 'Introdução', 'Desenvolvimento', 'Conclusão'];
+
+    // Functions to handle screen and modal
+    function showScreen(screenId) {
+        const screens = [homeScreen, mainTopicsScreen, quizScreen, finalScreen];
+        screens.forEach(screen => {
+            screen.classList.add('hidden');
+        });
+        document.getElementById(screenId).classList.remove('hidden');
+    }
+    
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
             modal.classList.remove('hidden');
             setTimeout(() => {
                 modal.style.opacity = 1;
-                modal.querySelector('.modal-container').classList.add('is-active');
+                const modalContainer = modal.querySelector('.modal-container');
+                if (modalContainer) {
+                    modalContainer.classList.add('is-active');
+                }
             }, 10);
         }
+    }
 
-        function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
+    function hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
             modal.style.opacity = 0;
-            modal.querySelector('.modal-container').classList.remove('is-active');
+            const modalContainer = modal.querySelector('.modal-container');
+            if (modalContainer) {
+                modalContainer.classList.remove('is-active');
+            }
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
         }
+    }
+    
+    function alertMessage(message) {
+        const modal = document.createElement('div');
+        modal.className = "modal-overlay";
+        modal.innerHTML = `
+            <div class="modal-container p-6 w-full max-w-sm">
+                <p class="text-center text-lg font-semibold mb-4">${message}</p>
+                <div class="flex justify-center">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg transition-colors">OK</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        requestAnimationFrame(() => {
+            modal.classList.remove('hidden');
+            const modalContainer = modal.querySelector('.modal-container');
+            modalContainer.classList.add('is-active');
+        });
+        modal.querySelector('button').addEventListener('click', () => {
+            modal.querySelector('.modal-container').classList.remove('is-active');
+            setTimeout(() => modal.remove(), 300);
+        });
+    }
 
-        function processAndStyleContent(text) {
-            let processedText = text;
-
-            // Normalize and clean up extra newlines and markdown list items
-            processedText = processedText.replace(/^- /gm, '').replace(/^\* /gm, '');
-            processedText = processedText.replace(/\n\n/g, '\n');
-
-            // Find and wrap examples in the new highlight class
-            processedText = processedText.replace(/Exemplo: (.*?)(?:\n|$)/g, '<p class="example-highlight">Exemplo: $1</p>');
-            
-            // Convert markdown headings to h3 tags and remove extra symbols
-            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>');
-            processedText = processedText.replace(/###\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
-            processedText = processedText.replace(/##\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
-            processedText = processedText.replace(/#\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
-
-            // Handle lists, ensuring proper structure
-            let finalContent = '';
-            let lines = processedText.split('\n');
-            let inList = false;
-
-            lines.forEach(line => {
-                let trimmedLine = line.trim();
-
-                if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-                    if (!inList) {
-                        finalContent += '<ul>';
-                        inList = true;
-                    }
-                    finalContent += `<li>${trimmedLine.substring(2).trim()}</li>`;
-                } else {
-                    if (inList) {
-                        finalContent += '</ul>';
-                        inList = false;
-                    }
-                    if (trimmedLine.length > 0) {
-                        if (trimmedLine.startsWith('<h3') || trimmedLine.startsWith('<p class="example-highlight"')) {
-                             finalContent += trimmedLine;
-                        } else {
-                             finalContent += `<p>${trimmedLine}</p>`;
-                        }
-                    }
+    function processAndStyleContent(text) {
+        let processedText = text;
+        processedText = processedText.replace(/^- /gm, '').replace(/^\* /gm, '');
+        processedText = processedText.replace(/\n\n/g, '\n');
+        processedText = processedText.replace(/Exemplo: (.*?)(?:\n|$)/g, '<p class="example-highlight">Exemplo: $1</p>');
+        processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>');
+        processedText = processedText.replace(/###\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
+        processedText = processedText.replace(/##\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
+        processedText = processedText.replace(/#\s*(.*?)[\n\r]/g, '<h3>$1</h3>');
+        let finalContent = '';
+        let lines = processedText.split('\n');
+        let inList = false;
+        lines.forEach(line => {
+            let trimmedLine = line.trim();
+            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                if (!inList) {
+                    finalContent += '<ul>';
+                    inList = true;
                 }
-            });
-
-            if (inList) {
-                finalContent += '</ul>';
-            }
-
-            // Highlight keywords in the final processed text
-            KEYWORDS.forEach(keyword => {
-                const regex = new RegExp(`\\b(${keyword})\\b`, 'gi');
-                finalContent = finalContent.replace(regex, `<span class="highlight">$1</span>`);
-            });
-
-            return finalContent;
-        }
-
-        // Functions to handle topic rendering
-        function renderMainTopics() {
-            mainTopicContainer.innerHTML = '';
-            topics.forEach((topic, index) => {
-                const container = document.createElement('div');
-                container.className = 'topic-container';
-                
-                const topicItem = document.createElement('div');
-                topicItem.id = topic.id;
-                topicItem.className = `topic-item p-4 bg-white rounded-lg shadow-md border-l-8 border-sky-500 transition-all cursor-pointer flex items-center`;
-                topicItem.setAttribute('role', 'button');
-                topicItem.setAttribute('tabindex', '0');
-                topicItem.setAttribute('aria-label', `Abrir subtópicos para ${topic.title}`);
-                topicItem.innerHTML = `
-                    <span class="number text-lg font-bold text-slate-400 mr-4">${index + 1}</span>
-                    <h3 class="font-semibold text-base text-slate-700">${topic.title}</h3>
-                `;
-                
-                const subtopicList = document.createElement('div');
-                subtopicList.className = 'subtopic-list mt-4 ml-8 space-y-2';
-                subtopicList.setAttribute('id', `subtopics-${topic.id}`);
-                
-                topic.subtopics.forEach((subtopic) => {
-                    const subtopicItem = document.createElement('div');
-                    subtopicItem.className = 'subtopic-item flex items-center justify-between';
-                    subtopicItem.innerHTML = `
-                        <label class="flex items-center space-x-2 w-full cursor-pointer" aria-label="${subtopic}">
-                            <input type="checkbox" class="subtopic-checkbox form-checkbox h-5 w-5 text-blue-600 rounded" data-subtopic="${subtopic}">
-                            <span class="text-sm font-medium text-slate-700">${subtopic}</span>
-                        </label>
-                        <button class="study-button flex items-center" aria-label="Estudar ${subtopic}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Estudar
-                        </button>
-                    `;
-                    subtopicItem.querySelector('.study-button').addEventListener('click', () => {
-                        generateStudyContent([subtopic]);
-                    });
-                    subtopicList.appendChild(subtopicItem);
-                });
-                
-                topicItem.addEventListener('click', () => {
-                    const allSubtopicLists = document.querySelectorAll('.subtopic-list');
-                    allSubtopicLists.forEach(list => {
-                        if (list.id !== `subtopics-${topic.id}`) {
-                            list.classList.remove('is-expanded');
-                        }
-                    });
-                    subtopicList.classList.toggle('is-expanded');
-                });
-                
-                container.appendChild(topicItem);
-                container.appendChild(subtopicList);
-                mainTopicContainer.appendChild(container);
-            });
-
-            // Update simulado button state based on checkboxes
-            const checkboxes = document.querySelectorAll('.subtopic-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    selectedSubtopics = new Set(Array.from(document.querySelectorAll('.subtopic-checkbox:checked')).map(cb => cb.dataset.subtopic));
-                    if (selectedSubtopics.size > 0) {
-                        configSimuladoBtn.disabled = false;
-                        configSimuladoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                finalContent += `<li>${trimmedLine.substring(2).trim()}</li>`;
+            } else {
+                if (inList) {
+                    finalContent += '</ul>';
+                    inList = false;
+                }
+                if (trimmedLine.length > 0) {
+                    if (trimmedLine.startsWith('<h3') || trimmedLine.startsWith('<p class="example-highlight"')) {
+                        finalContent += trimmedLine;
                     } else {
-                        configSimuladoBtn.disabled = true;
-                        configSimuladoBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        finalContent += `<p>${trimmedLine}</p>`;
+                    }
+                }
+            }
+        });
+
+        if (inList) {
+            finalContent += '</ul>';
+        }
+        KEYWORDS.forEach(keyword => {
+            const regex = new RegExp(`\\b(${keyword})\\b`, 'gi');
+            finalContent = finalContent.replace(regex, `<span class="highlight">$1</span>`);
+        });
+
+        return finalContent;
+    }
+    
+    // Armazena o título do subtópico para o PDF
+    let currentSubtopicTitle = '';
+
+    // Functions to handle topic rendering
+    function renderMainTopics() {
+        mainTopicContainer.innerHTML = '';
+        topics.forEach((topic, index) => {
+            const container = document.createElement('div');
+            container.className = 'topic-container';
+            
+            const topicItem = document.createElement('div');
+            topicItem.id = topic.id;
+            topicItem.className = `topic-item p-4 bg-white rounded-lg shadow-md border-l-8 border-sky-500 transition-all cursor-pointer flex items-center`;
+            topicItem.setAttribute('role', 'button');
+            topicItem.setAttribute('tabindex', '0');
+            topicItem.setAttribute('aria-label', `Abrir subtópicos para ${topic.title}`);
+            topicItem.innerHTML = `
+                <span class="number text-lg font-bold text-slate-400 mr-4">${index + 1}</span>
+                <h3 class="font-semibold text-base text-slate-700">${topic.title}</h3>
+            `;
+            
+            const subtopicList = document.createElement('div');
+            subtopicList.className = 'subtopic-list mt-4 ml-8 space-y-2';
+            subtopicList.setAttribute('id', `subtopics-${topic.id}`);
+            
+            topic.subtopics.forEach((subtopic) => {
+                const subtopicItem = document.createElement('div');
+                subtopicItem.className = 'subtopic-item flex items-center justify-content';
+                subtopicItem.innerHTML = `
+                    <label class="flex items-center space-x-2 w-full cursor-pointer" aria-label="${subtopic}">
+                        <input type="checkbox" class="subtopic-checkbox form-checkbox h-5 w-5 text-blue-600 rounded" data-subtopic="${subtopic}">
+                        <span class="text-sm font-medium text-slate-700">${subtopic}</span>
+                    </label>
+                    <button class="study-button flex items-center" aria-label="Estudar ${subtopic}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Estudar
+                    </button>
+                `;
+                subtopicItem.querySelector('.study-button').addEventListener('click', () => {
+                    currentSubtopicTitle = subtopic;
+                    generateStudyContent([subtopic]);
+                });
+                subtopicList.appendChild(subtopicItem);
+            });
+            
+            topicItem.addEventListener('click', () => {
+                const allSubtopicLists = document.querySelectorAll('.subtopic-list');
+                allSubtopicLists.forEach(list => {
+                    if (list.id !== `subtopics-${topic.id}`) {
+                        list.classList.remove('is-expanded');
                     }
                 });
+                subtopicList.classList.toggle('is-expanded');
             });
-        }
+            
+            container.appendChild(topicItem);
+            container.appendChild(subtopicList);
+            mainTopicContainer.appendChild(container);
+        });
+
+        // Update simulado button state based on checkboxes
+        const checkboxes = document.querySelectorAll('.subtopic-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                selectedSubtopics = new Set(Array.from(document.querySelectorAll('.subtopic-checkbox:checked')).map(cb => cb.dataset.subtopic));
+                if (selectedSubtopics.size > 0) {
+                    configSimuladoBtn.disabled = false;
+                    configSimuladoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    configSimuladoBtn.disabled = true;
+                    configSimuladoBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        });
+    }
+
+    // Função para gerar o conteúdo de estudo e exibi-lo
+    async function generateStudyContent(topicsToStudy) {
+        showModal('study-modal');
+        studyLoadingArea.classList.remove('hidden');
+        studyContent.classList.add('hidden');
+        downloadPdfBtn.classList.add('hidden'); // Esconde o botão de download
+        loadingMessage.textContent = "A carregar material de Estudo...";
         
-        // Functions to handle study content generation
-        async function generateStudyContent(topicsToStudy) {
-            showModal('study-modal');
-            studyLoadingArea.classList.remove('hidden');
-            studyContent.classList.add('hidden');
-            loadingMessage.textContent = "A carregar material de Estudo...";
-            
-            const promptTopics = topicsToStudy.join('; ');
-            const systemPrompt = "Você é um professor de Língua Portuguesa e um especialista em preparar alunos para o exame ProfLetras. Sua tarefa é gerar material de estudo detalhado, claro e didático. Use uma linguagem clara e formal, adequada para um público de pós-graduação. Estruture o conteúdo com títulos e subtítulos em negrito. Para cada conceito, forneça exemplos práticos e bem explicados, destacando a aplicação na vida real ou em contextos acadêmicos. Todos os exemplos devem começar com a frase 'Exemplo: '. Responda apenas com o material de estudo, sem introduções ou conclusões adicionais.";
-            const userQuery = `Gere um material de estudo detalhado sobre o(s) seguinte(s) tópico(s) do ProfLetras: ${promptTopics}.`;
+        const promptTopics = topicsToStudy.join('; ');
+        const systemPrompt = "Você é um professor de Língua Portuguesa e um especialista em preparar alunos para o exame ProfLetras. Sua tarefa é gerar material de estudo detalhado, claro e didático. Use uma linguagem clara e formal, adequada para um público de pós-graduação. Estruture o conteúdo com títulos e subtítulos em negrito. Para cada conceito, forneça exemplos práticos e bem explicados, destacando a aplicação na vida real ou em contextos acadêmicos. Todos os exemplos devem começar com a frase 'Exemplo: '. Responda apenas com o material de estudo, sem introduções ou conclusões adicionais.";
+        const userQuery = `Gere um material de estudo detalhado sobre o(s) seguinte(s) tópico(s) do ProfLetras: ${promptTopics}.`;
 
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-            };
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: {
+                parts: [{ text: systemPrompt }]
+            },
+        };
 
-            // Start a visual progress animation
-            let progress = 0;
-            progressBar.style.width = '0%';
-            const progressInterval = setInterval(() => {
-                progress += 5;
-                if (progress <= 90) { // Stop just before 100%
-                    progressBar.style.width = `${progress}%`;
-                } else {
-                    clearInterval(progressInterval);
-                }
-            }, 200);
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    const styledContent = processAndStyleContent(generatedText);
-                    studyContent.innerHTML = styledContent;
-                } else {
-                    studyContent.innerHTML = "<p>Desculpe, não consegui gerar o conteúdo. Tente novamente.</p>";
-                }
-            } catch (error) {
-                console.error("Erro na geração do conteúdo:", error);
-                let errorMessage = "Ocorreu um erro ao conectar-se com o professor virtual. Por favor, tente novamente mais tarde.";
-                if (error.message.includes('403')) {
-                    errorMessage = "Erro de autenticação: A sua chave de API não é válida ou não tem permissão para aceder a este serviço. Por favor, verifique a chave.";
-                } else if (error.message.includes('503')) {
-                    errorMessage = "Serviço Indisponível: O servidor está em manutenção ou sobrecarregado. Por favor, tente novamente em alguns minutos.";
-                }
-                studyContent.innerHTML = `<p>${errorMessage}</p>`;
-            } finally {
+        let progress = 0;
+        progressBar.style.width = '0%';
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            if (progress <= 90) {
+                progressBar.style.width = `${progress}%`;
+            } else {
                 clearInterval(progressInterval);
-                progressBar.style.width = '100%';
-                setTimeout(() => {
-                    studyLoadingArea.classList.add('hidden');
-                    studyContent.classList.remove('hidden');
-                }, 500);
             }
+        }, 200);
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (generatedText) {
+                const styledContent = processAndStyleContent(generatedText);
+                studyContent.innerHTML = styledContent;
+            } else {
+                studyContent.innerHTML = "<p>Desculpe, não consegui gerar o conteúdo. Tente novamente.</p>";
+            }
+        } catch (error) {
+            console.error("Erro na geração do conteúdo:", error);
+            let errorMessage = "Ocorreu um erro ao conectar-se com o professor virtual. Por favor, tente novamente mais tarde.";
+            if (error.message.includes('403')) {
+                errorMessage = "Erro de autenticação: A sua chave de API não é válida ou não tem permissão para aceder a este serviço. Por favor, verifique a chave.";
+            } else if (error.message.includes('503')) {
+                errorMessage = "Serviço Indisponível: O servidor está em manutenção ou sobrecarregado. Por favor, tente novamente em alguns minutos.";
+            }
+            studyContent.innerHTML = `<p>${errorMessage}</p>`;
+        } finally {
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            setTimeout(() => {
+                studyLoadingArea.classList.add('hidden');
+                studyContent.classList.remove('hidden');
+                downloadPdfBtn.classList.remove('hidden'); // Mostra o botão após o conteúdo ser carregado
+            }, 500);
         }
+    }
 
-        // Functions to handle quiz
-        async function startSimulado() {
-            showScreen('quiz-screen');
-            quizLoadingArea.classList.remove('hidden');
-            quizContent.classList.add('hidden');
+    // Função para exportar o conteúdo para PDF
+    async function exportToPdf() {
+        if (studyContent.classList.contains('hidden')) {
+            alertMessage("Nenhum conteúdo para baixar.");
+            return;
+        }
+    
+        alertMessage("A preparar o download do PDF. Por favor, aguarde.");
+
+        const contentDiv = document.getElementById('study-content');
+        
+        // Crie um clone do conteúdo para renderizar sem ser afetado pelo modal
+        const contentToRender = contentDiv.cloneNode(true);
+        contentToRender.style.padding = '1cm';
+        contentToRender.style.backgroundColor = '#FFFFFF';
+        contentToRender.style.fontFamily = 'Inter, sans-serif';
+        contentToRender.style.fontSize = '12pt';
+        contentToRender.style.color = '#1a2e05';
+        contentToRender.style.width = '210mm'; // A4 width
+        contentToRender.style.boxSizing = 'border-box';
+        contentToRender.style.position = 'absolute';
+        contentToRender.style.left = '-9999px'; // Move off-screen
+        document.body.appendChild(contentToRender);
+
+        // Ajusta os estilos para impressão
+        const h3Elements = contentToRender.querySelectorAll('h3');
+        h3Elements.forEach(h3 => {
+            h3.style.fontSize = '14pt';
+            h3.style.fontWeight = 'bold';
+            h3.style.color = '#1e40af';
+            h3.style.marginTop = '1em';
+            h3.style.marginBottom = '0.5em';
+        });
+
+        const pElements = contentToRender.querySelectorAll('p');
+        pElements.forEach(p => {
+            p.style.marginBottom = '1em';
+        });
+
+        const ulElements = contentToRender.querySelectorAll('ul');
+        ulElements.forEach(ul => {
+            ul.style.marginBottom = '1em';
+            ul.style.listStyleType = 'disc';
+            ul.style.paddingLeft = '20px';
+        });
+
+        const liElements = contentToRender.querySelectorAll('li');
+        liElements.forEach(li => {
+            li.style.marginBottom = '0.5em';
+        });
+
+        const highlightElements = contentToRender.querySelectorAll('.highlight');
+        highlightElements.forEach(span => {
+            span.style.color = '#dc2626';
+            span.style.fontWeight = '600';
+        });
+        
+        const exampleElements = contentToRender.querySelectorAll('.example-highlight');
+        exampleElements.forEach(p => {
+            p.style.backgroundColor = '#dcfce7';
+            p.style.borderLeft = '4px solid #16a34a';
+            p.style.padding = '10px';
+            p.style.borderRadius = '5px';
+            p.style.color = '#1a2e05';
+        });
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 10; // 1cm
+            const contentWidth = pageWidth - 2 * margin;
+
+            // Renderiza o conteúdo em canvas para preservar a formatação
+            const canvas = await html2canvas(contentToRender, {
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                windowWidth: contentToRender.scrollWidth,
+                windowHeight: contentToRender.scrollHeight
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const imgProps = doc.getImageProperties(imgData);
+            const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
+
+            let position = 0;
+            let pageNumber = 1;
+
+            while (position < contentHeight) {
+                if (pageNumber > 1) {
+                    doc.addPage();
+                }
+
+                // Cabeçalho
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.text(`ProfMais+ | ${currentSubtopicTitle}`, pageWidth / 2, margin + 5, { align: 'center' });
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, margin + 8, pageWidth - margin, margin + 8);
+                
+                // Conteúdo
+                const contentY = margin + 12;
+                const contentSpaceHeight = pageHeight - 2 * margin - 15;
+                const sliceHeight = Math.min(contentSpaceHeight, contentHeight - position);
+                
+                doc.addImage(imgData, 'JPEG', margin, contentY - position, contentWidth, contentHeight, null, 'NONE');
+                
+                // Rodapé
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.text(`Página ${pageNumber}`, pageWidth / 2, pageHeight - margin, { align: 'center' });
+                
+                position += contentSpaceHeight;
+                pageNumber++;
+            }
             
-            const topicsList = Array.from(selectedSubtopics).join('; ');
-            quizLoadingText.textContent = `Gerando ${currentQuestionQuantity} questões sobre: ${topicsList}`;
+            const filename = currentSubtopicTitle ? `Estudo_${currentSubtopicTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf` : "Estudo.pdf";
+            doc.save(filename);
+            
+            alertMessage("Download do PDF iniciado!");
+    
+        } catch (error) {
+            console.error("Erro ao gerar PDF:", error);
+            alertMessage("Ocorreu um erro ao gerar o PDF. Tente novamente.");
+        } finally {
+            document.body.removeChild(contentToRender);
+        }
+    }
 
-            const systemPrompt = `Você é um professor de Língua Portuguesa e um especialista em provas de múltipla escolha para o exame ProfLetras. Sua tarefa é criar ${currentQuestionQuantity} questões sobre os tópicos fornecidos, cada uma com 4 opções (A, B, C, D) e uma resposta correta, além de uma breve explicação. A resposta deve ser um objeto JSON.
+    // Functions to handle quiz
+    async function startSimulado() {
+        showScreen('quiz-screen');
+        quizLoadingArea.classList.remove('hidden');
+        quizContent.classList.add('hidden');
+        helpButtonContainer.classList.add('hidden');
+        
+        const topicsList = Array.from(selectedSubtopics).join('; ');
+        quizLoadingText.textContent = `Gerando ${currentQuestionQuantity} questões sobre: ${topicsList}`;
+
+        const systemPrompt = `Você é um professor de Língua Portuguesa e um especialista em provas de múltipla escolha para o exame ProfLetras. Sua tarefa é criar ${currentQuestionQuantity} questões sobre os tópicos fornecidos, cada uma com 4 opções (A, B, C, D) e uma resposta correta, além de uma breve explicação. A resposta deve ser um objeto JSON.
 
 Exemplo de formato JSON:
 [
@@ -793,161 +1054,300 @@ Exemplo de formato JSON:
   }
 ]`;
 
-            const userQuery = `Gere ${currentQuestionQuantity} questões de múltipla escolha para um simulado sobre os seguintes tópicos: ${topicsList}.`;
+        const userQuery = `Gere ${currentQuestionQuantity} questões de múltipla escolha para um simulado sobre os seguintes tópicos: ${topicsList}.`;
 
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "ARRAY",
-                        items: {
-                            type: "OBJECT",
-                            properties: {
-                                "question": { "type": "STRING" },
-                                "options": { "type": "ARRAY", "items": { "type": "STRING" } },
-                                "answer": { "type": "STRING" },
-                                "explanation": { "type": "STRING" }
-                            },
-                            "propertyOrdering": ["question", "options", "answer", "explanation"]
-                        }
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: {
+                parts: [{ text: systemPrompt }]
+            },
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "ARRAY",
+                    items: {
+                        type: "OBJECT",
+                        properties: {
+                            "question": { "type": "STRING" },
+                            "options": { "type": "ARRAY", "items": { "type": "STRING" } },
+                            "answer": { "type": "STRING" },
+                            "explanation": { "type": "STRING" }
+                        },
+                        "propertyOrdering": ["question", "options", "answer", "explanation"]
                     }
                 }
-            };
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                     throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const result = await response.json();
-                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (jsonText) {
-                    quizQuestions = JSON.parse(jsonText);
-                    currentQuestionIndex = 0;
-                    score = 0;
-                    displayQuestion();
-                } else {
-                    quizLoadingText.textContent = "Erro: Não foi possível gerar as questões. Por favor, tente novamente.";
-                }
-
-            } catch (error) {
-                console.error("Erro ao gerar quiz:", error);
-                quizLoadingText.textContent = "Erro ao gerar o simulado. Por favor, tente novamente.";
-            } finally {
-                quizLoadingArea.classList.add('hidden');
-                quizContent.classList.remove('hidden');
             }
+        };
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json();
+            const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (jsonText) {
+                quizQuestions = JSON.parse(jsonText);
+                currentQuestionIndex = 0;
+                score = 0;
+                displayQuestion();
+            } else {
+                quizLoadingText.textContent = "Erro: Não foi possível gerar as questões. Por favor, tente novamente.";
+            }
+
+        } catch (error) {
+            console.error("Erro ao gerar quiz:", error);
+            quizLoadingText.textContent = "Erro ao gerar o simulado. Por favor, tente novamente.";
+        } finally {
+            quizLoadingArea.classList.add('hidden');
+            quizContent.classList.remove('hidden');
+        }
+    }
+
+    function displayQuestion() {
+        if (currentQuestionIndex >= quizQuestions.length) {
+            showFinalScreen();
+            return;
         }
 
-        function displayQuestion() {
-            if (currentQuestionIndex >= quizQuestions.length) {
-                showFinalScreen();
+        const currentQuestion = quizQuestions[currentQuestionIndex];
+        questionText.textContent = currentQuestion.question;
+        optionsContainer.innerHTML = '';
+        nextQuestionBtn.classList.add('hidden');
+        helpButtonContainer.classList.add('hidden');
+        
+        currentQuestion.options.forEach((option, index) => {
+            const optionButton = document.createElement('button');
+            optionButton.className = 'option-btn';
+            optionButton.textContent = option;
+            optionButton.dataset.option = String.fromCharCode(65 + index); // A, B, C, D
+            optionButton.addEventListener('click', () => checkAnswer(optionButton));
+            optionsContainer.appendChild(optionButton);
+        });
+        
+        questionCounter.textContent = `Questão ${currentQuestionIndex + 1} de ${quizQuestions.length}`;
+        scoreDisplay.textContent = score;
+        progressBarQuiz.style.width = `${((currentQuestionIndex) / quizQuestions.length) * 100}%`;
+    }
+
+    async function checkAnswer(selectedButton) {
+        const currentQuestion = quizQuestions[currentQuestionIndex];
+        const correctOption = currentQuestion.answer;
+        const allOptions = optionsContainer.querySelectorAll('.option-btn');
+        let isCorrect = false;
+
+        allOptions.forEach(button => {
+            button.classList.add('disabled');
+            if (button.dataset.option === correctOption) {
+                button.classList.add('correct');
+            } else {
+                button.classList.add('incorrect');
+            }
+        });
+
+        if (selectedButton.dataset.option === correctOption) {
+            score++;
+            isCorrect = true;
+        } else {
+            helpButtonContainer.classList.remove('hidden');
+        }
+        scoreDisplay.textContent = score;
+        nextQuestionBtn.classList.remove('hidden');
+
+        // Store incorrect answer for help request
+        const incorrectAnswer = selectedButton.textContent;
+        const correctAnswer = allOptions[correctOption.charCodeAt(0) - 65].textContent;
+        selectedButton.dataset.incorrectAnswer = incorrectAnswer;
+        selectedButton.dataset.correctAnswer = correctAnswer;
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        displayQuestion();
+    }
+
+    function showFinalScreen() {
+        const totalQuestions = quizQuestions.length;
+        const correctAnswers = score;
+        const incorrectAnswers = totalQuestions - score;
+
+        finalScoreDisplay.textContent = `${correctAnswers}/${totalQuestions}`;
+        correctAnswersDisplay.textContent = correctAnswers;
+        incorrectAnswersDisplay.textContent = incorrectAnswers;
+        
+        showScreen('final-screen');
+    }
+
+    async function askForHelp() {
+        const userDocRef = doc(db, "artifacts", appId, "users", userId, "userData", "profile");
+        const userDoc = await getDoc(userDocRef);
+        const friendsHelpCount = userDoc.data()?.friendsHelpCount || 0;
+        
+        if (friendsHelpCount > 0) {
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            const selectedButton = optionsContainer.querySelector('.option-btn.incorrect');
+            const helpRequest = {
+                requesterId: userId,
+                question: currentQuestion.question,
+                incorrectAnswer: selectedButton.textContent,
+                correctAnswer: currentQuestion.options[currentQuestion.answer.charCodeAt(0) - 65],
+                timestamp: Date.now()
+            };
+
+            try {
+                const helpRequestDocRef = await addDoc(collection(db, "artifacts", appId, "public", "data", "help_requests"), helpRequest);
+                await updateDoc(userDocRef, { friendsHelpCount: friendsHelpCount - 1 });
+                
+                alertMessage(`Pedido de ajuda enviado com sucesso! Peça para um amigo inserir seu ID (${userId}) para responder.`);
+                document.getElementById('help-count').textContent = `(${friendsHelpCount - 1} restantes)`;
+                helpButtonContainer.classList.add('hidden');
+            } catch (error) {
+                console.error("Erro ao enviar pedido de ajuda:", error);
+                alertMessage("Não foi possível enviar o pedido de ajuda. Tente novamente.");
+            }
+        } else {
+            alertMessage("Você não tem mais pedidos de ajuda disponíveis.");
+        }
+    }
+    
+    async function findHelpRequest() {
+        const friendId = friendIdInput.value.trim();
+        if (!friendId) {
+            alertMessage("Por favor, insira o ID do seu amigo.");
+            return;
+        }
+
+        showModal('help-friend-modal');
+        helpLoading.classList.remove('hidden');
+        helpContent.classList.add('hidden');
+        
+        try {
+            const q = query(collection(db, "artifacts", appId, "public", "data", "help_requests"), where("requesterId", "==", friendId));
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                helpLoading.classList.add('hidden');
+                alertMessage("Não há pedidos de ajuda pendentes para este ID.");
+                hideModal('help-friend-modal');
                 return;
             }
-
-            const currentQuestion = quizQuestions[currentQuestionIndex];
-            questionText.textContent = currentQuestion.question;
-            optionsContainer.innerHTML = '';
-            nextQuestionBtn.classList.add('hidden');
             
-            currentQuestion.options.forEach((option, index) => {
-                const optionButton = document.createElement('button');
-                optionButton.className = 'option-btn';
-                optionButton.textContent = option;
-                optionButton.dataset.option = String.fromCharCode(65 + index); // A, B, C, D
-                optionButton.addEventListener('click', () => checkAnswer(optionButton));
-                optionsContainer.appendChild(optionButton);
+            const helpDoc = querySnapshot.docs[0];
+            const helpData = helpDoc.data();
+            
+            friendQuestionText.textContent = helpData.question;
+            friendIncorrectAnswerText.textContent = helpData.incorrectAnswer;
+            
+            // Randomize options for the helper
+            const options = [...new Set([helpData.correctAnswer, helpData.incorrectAnswer, 'Opção Aleatória 1', 'Opção Aleatória 2'])];
+            options.sort(() => Math.random() - 0.5);
+
+            helpOptionsContainer.innerHTML = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.addEventListener('click', () => checkHelperAnswer(button, helpData.correctAnswer, helpDoc.id));
+                helpOptionsContainer.appendChild(button);
             });
-            
-            questionCounter.textContent = `Questão ${currentQuestionIndex + 1} de ${quizQuestions.length}`;
-            scoreDisplay.textContent = score;
-            progressBarQuiz.style.width = `${((currentQuestionIndex) / quizQuestions.length) * 100}%`;
+
+            helpLoading.classList.add('hidden');
+            helpContent.classList.remove('hidden');
+
+        } catch (error) {
+            console.error("Erro ao buscar pedido de ajuda:", error);
+            helpLoading.classList.add('hidden');
+            alertMessage("Ocorreu um erro ao buscar o pedido de ajuda. Tente novamente.");
         }
+    }
 
-        function checkAnswer(selectedButton) {
-            const currentQuestion = quizQuestions[currentQuestionIndex];
-            const correctOption = currentQuestion.answer;
-            const allOptions = optionsContainer.querySelectorAll('.option-btn');
-
+    async function checkHelperAnswer(selectedButton, correctAnswer, docId) {
+        const allOptions = helpOptionsContainer.querySelectorAll('.option-btn');
+        allOptions.forEach(button => button.classList.add('disabled'));
+        
+        if (selectedButton.textContent === correctAnswer) {
+            selectedButton.classList.add('correct');
+            helpResultMessage.textContent = "Resposta correta! Ótima ajuda!";
+            helpResultMessage.classList.remove('text-red-600');
+            helpResultMessage.classList.add('text-green-600');
+            try {
+                await deleteDoc(doc(db, "artifacts", appId, "public", "data", "help_requests", docId));
+            } catch (error) {
+                console.error("Erro ao deletar documento de ajuda:", error);
+            }
+        } else {
+            selectedButton.classList.add('incorrect');
             allOptions.forEach(button => {
-                button.classList.add('disabled');
-                if (button.dataset.option === correctOption) {
+                if (button.textContent === correctAnswer) {
                     button.classList.add('correct');
-                } else {
-                    button.classList.add('incorrect');
                 }
             });
-
-            if (selectedButton.dataset.option === correctOption) {
-                score++;
-                scoreDisplay.textContent = score;
-            }
-
-            nextQuestionBtn.classList.remove('hidden');
+            helpResultMessage.textContent = "Resposta incorreta. Tente novamente!";
+            helpResultMessage.classList.remove('text-green-600');
+            helpResultMessage.classList.add('text-red-600');
         }
+    }
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            displayQuestion();
+    // Event Listeners
+    startStudiesBtn.addEventListener('click', () => {
+        showScreen('main-topics-screen');
+        renderMainTopics();
+    });
+
+    backToHomeBtn.addEventListener('click', () => {
+        showScreen('home-screen');
+    });
+    
+    closeStudyModalBtn.addEventListener('click', () => hideModal('study-modal'));
+
+    // Novo listener para o botão de download de PDF
+    downloadPdfBtn.addEventListener('click', () => {
+        exportToPdf();
+    });
+
+    configSimuladoBtn.addEventListener('click', () => {
+        if (selectedSubtopics.size > 0) {
+            showModal('question-quantity-modal');
         }
+    });
 
-        function showFinalScreen() {
-            const totalQuestions = quizQuestions.length;
-            const correctAnswers = score;
-            const incorrectAnswers = totalQuestions - score;
+    confirmNumQuestionsBtn.addEventListener('click', () => {
+        currentQuestionQuantity = parseInt(modalQuestionQuantityInput.value, 10);
+        hideModal('question-quantity-modal');
+        startSimulado();
+    });
+    
+    cancelNumQuestionsBtn.addEventListener('click', () => hideModal('question-quantity-modal'));
+    nextQuestionBtn.addEventListener('click', nextQuestion);
+    backToMenuQuizBtn.addEventListener('click', () => showScreen('main-topics-screen'));
+    
+    restartQuizBtn.addEventListener('click', startSimulado);
+    backToMenuFinalBtn.addEventListener('click', () => showScreen('main-topics-screen'));
+    backToHomeFinalBtn.addEventListener('click', () => showScreen('home-screen'));
 
-            finalScoreDisplay.textContent = `${correctAnswers}/${totalQuestions}`;
-            correctAnswersDisplay.textContent = correctAnswers;
-            incorrectAnswersDisplay.textContent = incorrectAnswers;
-            
-            showScreen('final-screen');
-        }
-
-        // Event Listeners
-        startStudiesBtn.addEventListener('click', () => {
-            showScreen('main-topics-screen');
-            renderMainTopics();
+    // New Event Listeners for Help a Friend feature
+    copyUserIdBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(userId).then(() => {
+            alertMessage("ID copiado para a área de transferência!");
+        }).catch(err => {
+            console.error('Erro ao copiar ID: ', err);
+            alertMessage("Não foi possível copiar o ID. Por favor, copie manualmente.");
         });
+    });
 
-        backToHomeBtn.addEventListener('click', () => {
-            showScreen('home-screen');
-        });
-        
-        closeStudyModalBtn.addEventListener('click', () => hideModal('study-modal'));
+    findFriendHelpBtn.addEventListener('click', findHelpRequest);
+    closeHelpFriendModal.addEventListener('click', () => hideModal('help-friend-modal'));
+    askForHelpBtn.addEventListener('click', askForHelp);
 
-        configSimuladoBtn.addEventListener('click', () => {
-            if (selectedSubtopics.size > 0) {
-                showModal('question-quantity-modal');
-            }
-        });
-
-        confirmNumQuestionsBtn.addEventListener('click', () => {
-            currentQuestionQuantity = parseInt(modalQuestionQuantityInput.value, 10);
-            hideModal('question-quantity-modal');
-            startSimulado();
-        });
-        
-        cancelNumQuestionsBtn.addEventListener('click', () => hideModal('question-quantity-modal'));
-        nextQuestionBtn.addEventListener('click', nextQuestion);
-        backToMenuQuizBtn.addEventListener('click', () => showScreen('main-topics-screen'));
-        
-        restartQuizBtn.addEventListener('click', startSimulado);
-        backToMenuFinalBtn.addEventListener('click', () => showScreen('main-topics-screen'));
-        backToHomeFinalBtn.addEventListener('click', () => showScreen('home-screen'));
-
-        // Initialize Firebase on load
-        document.addEventListener('DOMContentLoaded', () => {
-            initFirebase();
-        });
-    </script>
+    // Initialize Firebase on load
+    document.addEventListener('DOMContentLoaded', () => {
+        initFirebase();
+    });
+</script>
 </body>
 </html>
